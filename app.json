@@ -1,8 +1,0 @@
-{
-  "name": "Lazulio name",
-  "description": "Lazulio description",
-  "repository": "https://github.com/Keceltes/lazulio",
-  "logo": "http://node-js-sample.herokuapp.com/node.svg",
-  "keywords": ["node", "express", "static"],
-  "image": "heroku/nodejs"
-}
