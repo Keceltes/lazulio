@@ -1,0 +1,30 @@
+<!-- 1 -->
+<!-- The ngApp directive designates the root element of the application and is typically placed near the root element of the page - e.g. on the <body> or <html> tags.-->
+<!-- still works if mean-retail named something else-->
+<html ng-app="mean-retail">
+  <head>
+    <!-- scripts to include -->
+    <script type="text/javascript"
+      src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js">
+    </script>
+    <script type="text/javascript"
+      src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-route.js">
+    </script>
+    <!-- this required browserify to create, correct? and index.js is just a "compiled" collection of js-->
+    <!-- this may be how it references all js without explicitly referencing each js-->
+    <script type="text/javascript" src="/client/bin/index.js"></script>
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <!-- css to include -->
+    <link rel="stylesheet" type="text/css" href="/css/mean-retail.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
+  </head>
+  <body>
+  <!-- this name is specific, if renamed then doesn't show up, how does it know what this refers to, not directives -->
+  <!-- it matches the name of a div class in templates/nav_bar.html-->
+    <nav-bar></nav-bar>
+<!-- ngView is a directive that complements the $route service by including the rendered template of the current route into the main layout (index.html) file.
+ Every time the current route changes, the included view changes with it according to the configuration of the $route service.-->
+  <!-- only 1 occurrence of this div class-->
+    <div class="content-wrapper" ng-view></div>
+  </body>
+</html>

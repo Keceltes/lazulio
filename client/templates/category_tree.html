@@ -1,0 +1,35 @@
+<!-- wow, just the tree part, list of crumbs -->
+<div class="category-tree-wrapper" ng-show="category">
+  <div class="crumbs">
+    <!-- parts previous to current category, hence requiring ng-repeat -->
+    <div class="crumb" ng-repeat="ancestor in category.ancestors">
+      <!-- links to ancestors -->
+      <a ng-href="#/category/{{ancestor}}">
+        {{ancestor}}
+      </a>
+      <!-- maybe if none found, then hide? -->
+      <div class="divider" ng-hide="$last">
+        /
+      </div>
+    </div>
+    <!-- part at current category -->
+    <div class="child-categories" ng-show="children && children.length">
+      <div class="divider">
+        /
+      </div>
+      <div  class="child-arrow"
+            ng-init="display = false;"
+            ng-click="display = !display;">
+        <i class="fa fa-chevron-down"></i>
+      </div>
+      <!-- the dropdown for children in this category, also uses ng-repeat like the search results -->
+      <div class="child-select" ng-show="display">
+        <div ng-repeat="child in children">
+          <a ng-href="#/category/{{child._id}}">
+            {{child._id}}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
