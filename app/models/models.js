@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var _ = require('underscore');
+console.log('reading models');
 
 module.exports = function(wagner) {
   //set up to connect to db

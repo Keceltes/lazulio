@@ -10,7 +10,7 @@ app.use(require('morgan')());
 
 //the models.js default module.export is a function that takes in an object wagner
 //returns a models structure with Categories and User (not product?)
-require('./models')(wagner);
+require('./app/models/models.js')(wagner);
 //above equivalent to below
 //var models = require('./models');
 //models(wagner);
@@ -26,7 +26,7 @@ app.use('/api/v1', require('./api')(wagner));
 // For instance, '/6-examples/hello-http.html' in
 // the browser will show the '/6-examples/hello-http.html'
 // file.
-app.use(express.static('/', { maxAge: 4 * 60 * 60 * 1000 /* 2hrs */ }));
+app.use(express.static('/lazulio/lazulio/', { maxAge: 4 * 60 * 60 * 1000 /* 2hrs */ }));
 
 app.listen(3000);
 console.log('Listening on port 3000!');
