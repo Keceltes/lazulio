@@ -202,7 +202,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1460646828196</updated>
-      <workItem from="1460646829821" duration="246000" />
+      <workItem from="1460646829821" duration="337000" />
     </task>
     <task id="LOCAL-00001" summary="Restarting with Heroku code foundation">
       <created>1460646897433</created>
@@ -225,11 +225,18 @@
       <option name="project" value="LOCAL" />
       <updated>1460647039232</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Restarting with Heroku code foundation">
+      <created>1460647077675</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1460647077675</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="246000" />
+    <option name="totallyTimeSpent" value="337000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1034" extended-state="6" />
