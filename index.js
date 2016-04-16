@@ -1,4 +1,6 @@
 var express = require('express');
+var wagner = require('wagner-core');
+
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
@@ -17,3 +19,19 @@ app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
 
+
+var models = require('./models/models.js')(wagner);
+var Category = models.Category;
+/*var category = new Category({
+  _id: "testCategory2"
+});
+
+category.save();*/
+
+Category.find({}).exec(function(err, models) {
+  if (err) {
+    console.log('error');
+  } else {
+    console.log(models.length);
+  }
+});

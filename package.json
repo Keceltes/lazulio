@@ -8,7 +8,10 @@
   },
   "dependencies": {
     "ejs": "2.3.3",
-    "express": "4.13.3"
+    "express": "4.13.3",
+    "underscore": "1.5.2",
+    "mongoose": "4.0.3",
+    "wagner-core": "0.1.0"
   },
   "engines": {
     "node": "0.12.7"
