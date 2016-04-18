@@ -4,7 +4,10 @@ var wagner = require('wagner-core');
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
-
+//registers models with wagner
+module.exports.models = require('./models/models.js')(wagner);
+//registers API with wagner
+app.use('/api/v1', require('./api')(wagner));
 app.use(express.static(__dirname + '/public'));
 
 // views is directory for all template files
@@ -20,13 +23,13 @@ app.listen(app.get('port'), function() {
 });
 
 
-var models = require('./models/models.js')(wagner);
-var Category = models.Category;
-/*var category = new Category({
+
+/*var Category = models.Category;
+var category = new Category({
   _id: "testCategory2"
 });
 
-category.save();*/
+category.save();
 
 Category.find({}).exec(function(err, models) {
   if (err) {
@@ -34,4 +37,5 @@ Category.find({}).exec(function(err, models) {
   } else {
     console.log(models.length);
   }
-});
+});*/
+

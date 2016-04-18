@@ -14,4 +14,5 @@ var categorySchema = {
 };
 
 module.exports = new mongoose.Schema(categorySchema);
+//schema (below) needs to be used in asset class
 module.exports.categorySchema = categorySchema;

@@ -13,15 +13,18 @@ module.exports = function(wagner) {
   //normal method of created a model with mongoose and a schema
   var Category =
     mongoose.model('Category', require('./category'), 'categories');
-  /*var User =
-    mongoose.model('User', require('./user'), 'users');*/
+  var User =
+    mongoose.model('User', require('./user'), 'users');
+  var Asset =
+      mongoose.model('Asset', require('./asset'), 'assets');
 
 
   //a JSON structure of the models
   //is returned out of function
   var models = {
     Category: Category,
-    //User: User
+    User: User,
+    Asset: Asset
   };
 
   // To ensure DRY-ness, register factories in a loop
