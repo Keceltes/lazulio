@@ -16,8 +16,31 @@ module.exports = function(wagner) {
   var api = express.Router();
 
   api.use(bodyparser.json());
-
+    
   /* Category API */
+  api.put('/category/save', wagner.invoke(function(Category) {
+    return function(req, res) {
+      console.log('server side category save called');
+      console.log(JSON.stringify(req.body));
+      var category = new Category({
+        _id: req.body._id,
+        parent: req.body.parent,
+        ancestors: req.body.ancestors,
+        synonyms: req.body.synonyms
+      });
+      console.log(category);
+      category.save(function(error, category) {
+        if (error) {
+          console.log(error.toString());
+          return res.
+          status(status.INTERNAL_SERVER_ERROR).
+          json({ error: error.toString() });
+        }
+        return res.json({ category: category });
+      });
+    };
+  }));
+  
   api.get('/category/id/:id', wagner.invoke(function(Category) {
     return function(req, res) {
       Category.findOne({ _id: req.params.id }, function(error, category) {
@@ -113,6 +136,7 @@ module.exports = function(wagner) {
   /* text search API */
   api.get('/asset/text/:query', wagner.invoke(function(Asset) {
     return function(req, res) {
+      console.log('server side search called');
       Asset.
         find(
           { $text : { $search : req.params.query } },

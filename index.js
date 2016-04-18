@@ -8,10 +8,11 @@ app.set('port', (process.env.PORT || 5000));
 module.exports.models = require('./models/models.js')(wagner);
 //registers API with wagner
 app.use('/api/v1', require('./api')(wagner));
+
 app.use(express.static(__dirname + '/public'));
 
 // views is directory for all template files
-app.set('views', __dirname + '/views');
+app.set('views', __dirname + '/public/views');
 app.set('view engine', 'ejs');
 
 app.get('/', function(request, response) {

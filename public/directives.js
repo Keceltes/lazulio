@@ -1,6 +1,13 @@
 //direct to specific html pages
 //links controller with url
 //also, all exports.camelCase get called by camel-case in html
+exports.saveCategory = function() {
+  return {
+    controller: 'CategorySaveController',
+    templateUrl: '/views/partials/save_category.ejs'
+  };
+};
+
 exports.addToCart = function() {
   return {
     controller: 'AddToCartController',
@@ -47,6 +54,6 @@ exports.assetDetails = function() {
 exports.searchBar = function() {
   return {
     controller: 'SearchBarController',
-    templateUrl: '/assessment/templates/search_bar.html'
+    templateUrl: '/views/partials/search_bar.html'
   };
 };

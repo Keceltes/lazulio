@@ -10,6 +10,7 @@ var services = require('./services');
 
 var components = angular.module('lazulio.components', ['ng']);
 _.each(controllers, function(controller, name) {
+    console.log('anything in here? ' + name);
     components.controller(name, controller);
 });
 _.each(directives, function(directive, name) {

@@ -10,6 +10,10 @@ var categorySchema = {
   ancestors: [{
     type: String,
     ref: 'Category'
+  }],
+  synonyms: [{
+    type: String,
+    ref: 'Category'
   }]
 };
 
