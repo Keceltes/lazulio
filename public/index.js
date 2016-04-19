@@ -24,18 +24,27 @@ _.each(services, function(service, name) {
 //sometimes the var app is used for express(), this time it's used for an angular module
 var app = angular.module('lazulio', ['lazulio.components', 'ngRoute']);
 
+//routing via routeProvider?  Not sure why this is here and exists directives, though directives are linked by controller.js
+//this is linked directly by web address, meaning they don't pass the controller REST API
+//but category/:category, checkout and product/:id are all in controller and directives
+//04_18_2016
+//no this is way different than directives.  directives are html templates or partial pages that are inserted into full pages,
+// with a controller with functions assigned to that partial page
+// this routeProvider is for handling different pages
+
+//you would use templateUrl if there's no controller needed, otherwise use template:
 app.config(function($routeProvider) {
     $routeProvider.
-    when('/category/:category', {
-        templateUrl: '/assessment/templates/category_view.html'
+    when('/asset/new', {
+        template: '<save-asset></save-asset>'
     }).
-    when('/checkout', {
-        template: '<checkout></checkout>'
-    }).
-    when('/asset/:id', {
-        template: '<asset-details></asset-details>'
+    when('/category/new', {
+        template: '<save-category></save-category>'
     }).
     when('/', {
-        template: '<search-bar></search-bar>'
+        templateUrl: '/views/pages/homepage.ejs'
+    }).
+    when('/tags', {
+        template: '<advanced-search></advanced-search>'
     });
 });

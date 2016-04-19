@@ -12,22 +12,20 @@
 </head>
 
 <body>
+    <nav-bar></nav-bar>
 
-  <% include ../partials/nav.ejs %>
-  <search-bar></search-bar>
-  categories</br>
-  <save-category></save-category>
-</br>
+  <div class="content-wrapper" ng-view>
+  </div>
+
+  <a ng-href="#/asset/new">
+    link to bring up asset upload in the ng-view
+  </a></br>
+  <a ng-href="#/category/new">
+    link to bring up category upload in the ng-view
+  </a></br>
   </br>
-  asset</br>
-  name <input type="text" ng-model="nameText"/></br>
-  description <input type="text" ng-model="descText"/></br>
-  organization <input  type="text" ng-model="orgText"/></br>
-  development status <input  type="text" ng-model="statusText"/></br>
-  application / market <input type="text" ng-model="applicationText"/></br>
-  advantages <input type="text" ng-model="advantagesText"/></br>
-  contact <input  type="text" ng-model="contactText"/></br>
-  tags <input  type="text" ng-model="tagText"/></br>
-  <button>save</button>
+  </br>
+  </br>
+  footer, about us, contact us, etc..
 </body>
 </html>

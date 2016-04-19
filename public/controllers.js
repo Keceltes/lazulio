@@ -1,9 +1,42 @@
+exports.NavBarController = function($scope, $http, $timeout) {
+    $scope.openTagsModal = function() {
+        console.log('open tags modal here');
+    };
+};
+
+exports.AdvancedSearchController = function($scope, $http, $timeout) {
+    console.log('category save controller properly registered');
+    $scope.categorySave = function() {
+        console.log('scope.categorySave function called');
+        console.log('contents: ' + JSON.stringify($scope.category));
+
+        $http.put('/api/v1/category/save', $scope.category).success(function(data) {
+            console.log('api/v1/category/save called successfully');
+            $scope.success = true;
+        });
+    };
+};
+
+
 exports.CategorySaveController = function($scope, $http, $timeout) {
   console.log('category save controller properly registered');
   $scope.categorySave = function() {
     console.log('scope.categorySave function called');
     console.log('contents: ' + JSON.stringify($scope.category));
     
+    $http.put('/api/v1/category/save', $scope.category).success(function(data) {
+      console.log('api/v1/category/save called successfully');
+      $scope.success = true;
+    });
+  };
+};
+
+exports.AssetSaveController = function($scope, $http, $timeout) {
+  console.log('category save controller properly registered');
+  $scope.categorySave = function() {
+    console.log('scope.categorySave function called');
+    console.log('contents: ' + JSON.stringify($scope.category));
+
     $http.put('/api/v1/category/save', $scope.category).success(function(data) {
       console.log('api/v1/category/save called successfully');
       $scope.success = true;

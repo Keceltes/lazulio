@@ -1366,12 +1366,45 @@ module.exports = {
 }).call(this);
 
 },{}],3:[function(require,module,exports){
+exports.NavBarController = function($scope, $http, $timeout) {
+    $scope.openTagsModal = function() {
+        console.log('open tags modal here');
+    };
+};
+
+exports.AdvancedSearchController = function($scope, $http, $timeout) {
+    console.log('category save controller properly registered');
+    $scope.categorySave = function() {
+        console.log('scope.categorySave function called');
+        console.log('contents: ' + JSON.stringify($scope.category));
+
+        $http.put('/api/v1/category/save', $scope.category).success(function(data) {
+            console.log('api/v1/category/save called successfully');
+            $scope.success = true;
+        });
+    };
+};
+
+
 exports.CategorySaveController = function($scope, $http, $timeout) {
   console.log('category save controller properly registered');
   $scope.categorySave = function() {
     console.log('scope.categorySave function called');
     console.log('contents: ' + JSON.stringify($scope.category));
     
+    $http.put('/api/v1/category/save', $scope.category).success(function(data) {
+      console.log('api/v1/category/save called successfully');
+      $scope.success = true;
+    });
+  };
+};
+
+exports.AssetSaveController = function($scope, $http, $timeout) {
+  console.log('category save controller properly registered');
+  $scope.categorySave = function() {
+    console.log('scope.categorySave function called');
+    console.log('contents: ' + JSON.stringify($scope.category));
+
     $http.put('/api/v1/category/save', $scope.category).success(function(data) {
       console.log('api/v1/category/save called successfully');
       $scope.success = true;
@@ -1539,60 +1572,37 @@ exports.SearchBarController = function($scope, $http) {
 exports.saveCategory = function() {
   return {
     controller: 'CategorySaveController',
-    templateUrl: '/views/partials/save_category.ejs'
+    templateUrl: '/views/pages/save_category.ejs'
+  };
+};
+exports.saveAsset = function() {
+  return {
+    controller: 'AssetSaveController',
+    templateUrl: '/views/pages/save_asset.ejs'
   };
 };
 
-exports.addToCart = function() {
-  return {
-    controller: 'AddToCartController',
-    templateUrl: '/assessment/templates/add_to_cart.html'
-  };
-};
-
-exports.categoryAssets = function() {
-  return {
-    controller: 'CategoryAssetsController',
-    templateUrl: '/assessment/templates/category_assets.html'
-  }
-};
-
-exports.categoryTree = function() {
-  return {
-    controller: 'CategoryTreeController',
-    templateUrl: '/assessment/templates/category_tree.html'
-  }
-};
-
-exports.checkout = function() {
-  return {
-    controller: 'CheckoutController',
-    templateUrl: '/assessment/templates/checkout.html'
-  };
-};
-
-exports.navBar = function() {
-  console.log('test navbar directives');
-  return {
-    controller: 'NavBarController',
-    templateUrl: '/assessment/templates/nav_bar.html'
-  };
-};
-
-exports.assetDetails = function() {
-  return {
-    controller: 'AssetDetailsController',
-    templateUrl: '/assessment/templates/asset_details.html'
-  };
-};
 
 exports.searchBar = function() {
   return {
     controller: 'SearchBarController',
-    templateUrl: '/views/partials/search_bar.html'
+    templateUrl: '/views/partials/search_bar.ejs'
   };
 };
 
+exports.navBar = function() {
+  return {
+    controller: 'NavBarController',
+    templateUrl: '/views/partials/nav.ejs'
+  };
+};
+
+exports.advancedSearch = function() {
+  return {
+    controller: 'AdvancedSearchController',
+    templateUrl: '/views/pages/advanced_search.ejs'
+  }
+}
 },{}],5:[function(require,module,exports){
 /**
  * Created by Keceltes on 4/15/2016.
@@ -1620,19 +1630,28 @@ _.each(services, function(service, name) {
 //sometimes the var app is used for express(), this time it's used for an angular module
 var app = angular.module('lazulio', ['lazulio.components', 'ngRoute']);
 
+//routing via routeProvider?  Not sure why this is here and exists directives, though directives are linked by controller.js
+//this is linked directly by web address, meaning they don't pass the controller REST API
+//but category/:category, checkout and product/:id are all in controller and directives
+//04_18_2016
+//no this is way different than directives.  directives are html templates or partial pages that are inserted into full pages,
+// with a controller with functions assigned to that partial page
+// this routeProvider is for handling different pages
+
+//you would use templateUrl if there's no controller needed, otherwise use template:
 app.config(function($routeProvider) {
     $routeProvider.
-    when('/category/:category', {
-        templateUrl: '/assessment/templates/category_view.html'
+    when('/asset/new', {
+        template: '<save-asset></save-asset>'
     }).
-    when('/checkout', {
-        template: '<checkout></checkout>'
-    }).
-    when('/asset/:id', {
-        template: '<asset-details></asset-details>'
+    when('/category/new', {
+        template: '<save-category></save-category>'
     }).
     when('/', {
-        template: '<search-bar></search-bar>'
+        templateUrl: '/views/pages/homepage.ejs'
+    }).
+    when('/tags', {
+        template: '<advanced-search></advanced-search>'
     });
 });
 

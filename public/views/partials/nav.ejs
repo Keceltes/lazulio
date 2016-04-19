@@ -2,9 +2,9 @@
   <div class="container">
     <ul class="nav navbar-nav">
       <li class="active">
-        <a href="/"><span class="glyphicon glyphicon-home"></span> Home</a>
+        <a ng-href="#/"><span class="glyphicon glyphicon-home"></span> Home</a>
       </li>
-      <li>
+      <!--<li>
         <a href="https://devcenter.heroku.com/articles/how-heroku-works"><span class="glyphicon glyphicon-user"></span> How Heroku Works</a>
       </li>
       <li class="dropdown">
@@ -22,11 +22,19 @@
             <li><a href="https://devcenter.heroku.com/articles/getting-started-with-heroku-and-connect-without-local-dev">Getting Started on Heroku with Heroku Connect</a></li>
             <li><a href="https://devcenter.heroku.com/articles/getting-started-with-jruby">Getting Started with Ruby on Heroku (Microsoft Windows)</a></li>
           </ul>
+      </li>-->
+      <li>
+        <search-bar></search-bar>
+      </li>
+      <li>
+        <div>
+          <a ng-href="#/tags" >See all tags (advanced search)</a>
+        </div>
       </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li class="navbar-right">
-        <a href="https://devcenter.heroku.com"><span class="glyphicon glyphicon-book"></span> Heroku Dev Center</a>
+        <a href="https://devcenter.heroku.com"><span class="glyphicon glyphicon-user"></span> My Account</a>
       </li>
     </ul>
   </div>
