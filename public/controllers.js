@@ -5,16 +5,13 @@ exports.NavBarController = function($scope, $http, $timeout) {
 };
 
 exports.AdvancedSearchController = function($scope, $http, $timeout) {
-    console.log('category save controller properly registered');
-    $scope.categorySave = function() {
-        console.log('scope.categorySave function called');
-        console.log('contents: ' + JSON.stringify($scope.category));
+        console.log('scope.categoryAll function called');
 
-        $http.put('/api/v1/category/save', $scope.category).success(function(data) {
-            console.log('api/v1/category/save called successfully');
+        $http.get('/api/v1/category/all').success(function(data) {
+            console.log('api/v1/category/all called successfully');
+            $scope.categories = data.categories;
             $scope.success = true;
         });
-    };
 };
 
 

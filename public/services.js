@@ -4,7 +4,7 @@ var status = require('http-status');
 exports.$user = function($http) {
   var s = {};
 
-  s.loadUser = function() {
+  /*s.loadUser = function() {
     $http.
       get('/api/v1/me').
       success(function(data) {
@@ -19,7 +19,7 @@ exports.$user = function($http) {
 
   s.loadUser();
 
-  setInterval(s.loadUser, 60 * 60 * 1000);
+  setInterval(s.loadUser, 60 * 60 * 1000);*/
 
   return s;
 };
