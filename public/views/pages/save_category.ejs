@@ -5,4 +5,8 @@
     ancestors (comma separated) <input  type="text" ng-model="category.ancestors"/></br>
     synonyms (comma separated) <input  type="text" ng-model="category.synonyms"/></br>
     <button ng-click="categorySave()" >save</button>
+    <div ng-show="success">
+        <i class="fa fa-check"></i>
+        saved!
+    </div>
 </div>
