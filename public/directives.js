@@ -1,6 +1,13 @@
 //direct to specific html pages
 //links controller with url
 //also, all exports.camelCase get called by camel-case in html
+exports.about = function() {
+  return {
+    controller: 'AboutController',
+    templateUrl: '/views/pages/about.ejs'
+  };
+};
+
 exports.saveCategory = function() {
   return {
     controller: 'CategorySaveController',
@@ -33,5 +40,5 @@ exports.advancedSearch = function() {
   return {
     controller: 'AdvancedSearchController',
     templateUrl: '/views/pages/advanced_search.ejs'
-  }
-}
+  };
+};

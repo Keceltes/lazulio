@@ -46,5 +46,8 @@ app.config(function($routeProvider) {
     }).
     when('/tags', {
         template: '<advanced-search></advanced-search>'
+    }).
+    when('/about', {
+        template: '<about></about>'
     });
 });
