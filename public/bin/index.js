@@ -1371,8 +1371,17 @@ exports.NavBarController = function($scope, $http, $timeout) {
         console.log('open tags modal here');
     };
 };
-exports.AboutController = function($scope, $http, $timeout) {
-  
+exports.AboutController = function($scope, $http, $timeout, auth, store) {
+    // LoginCtrl.js
+    //angular.module('lazulio').controller( 'LoginCtrl', function ( $scope, auth) {
+        $scope.auth = auth;
+    //});
+
+    $scope.logout = function() {
+        auth.signout();
+        store.remove('profile');
+        store.remove('token');
+    }
 };
 exports.AdvancedSearchController = function($scope, $http, $timeout) {
         console.log('scope.categoryAll function called');
@@ -1502,9 +1511,8 @@ _.each(services, function(service, name) {
     components.service(name, service);
 });
 
-
-//sometimes the var app is used for express(), this time it's used for an angular module
-var app = angular.module('lazulio', ['lazulio.components', 'ngRoute']);
+//sometimes the var app is used for express(), this time it's used for an angular module, probably nothing of concern
+var app = angular.module('lazulio', ['lazulio.components', 'auth0', 'angular-storage', 'angular-jwt', 'ngRoute']);
 
 //routing via routeProvider?  Not sure why this is here and exists directives, though directives are linked by controller.js
 //this is linked directly by web address, meaning they don't pass the controller REST API
@@ -1515,7 +1523,8 @@ var app = angular.module('lazulio', ['lazulio.components', 'ngRoute']);
 // this routeProvider is for handling different pages
 
 //you would use templateUrl if there's no controller needed, otherwise use template:
-app.config(function($routeProvider) {
+app.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, $locationProvider,
+                                    jwtInterceptorProvider) {
     $routeProvider.
     when('/asset/new', {
         template: '<save-asset></save-asset>'
@@ -1531,6 +1540,51 @@ app.config(function($routeProvider) {
     }).
     when('/about', {
         template: '<about></about>'
+    });
+
+    authProvider.init({
+        domain: 'lazulio.auth0.com',
+        clientID: 'j11MaWle1aly6QSB5MgGr1BEosCeDqfT'
+    });
+
+    //app.js, not sure if this belongs here in particular though
+    authProvider.on('loginSuccess', function($location, profilePromise, idToken, store) {
+        console.log("Login Success");
+        profilePromise.then(function(profile) {
+            store.set('profile', profile);
+            store.set('token', idToken);
+        });
+        $location.path('/');
+    });
+
+    authProvider.on('loginFailure', function() {
+        // Error Callback
+        console.log("Login Failure");
+    });
+
+    // We're annotating this function so that the `store` is injected correctly when this file is minified
+    jwtInterceptorProvider.tokenGetter = ['store', function(store) {
+        // Return the saved token
+        return store.get('token');
+    }];
+
+    $httpProvider.interceptors.push('jwtInterceptor');
+})
+    .run(function($rootScope, auth, store, jwtHelper, $location) {
+    // This hooks al auth events to check everything as soon as the app starts
+    auth.hookEvents();
+    $rootScope.$on('$locationChangeStart', function() {
+        var token = store.get('token');
+        if (token) {
+            if (!jwtHelper.isTokenExpired(token)) {
+                if (!auth.isAuthenticated) {
+                    auth.authenticate(store.get('profile'), token);
+                }
+            } else {
+                // Either show the login page or use the refresh token to get a new idToken
+                $location.path('/');
+            }
+        }
     });
 });
 
