@@ -16,8 +16,18 @@ module.exports = new mongoose.Schema({
   },
   data: {
     oauth: { type: String, required: true },
-    cart: [{
-      product: {
+    interestedTags: [{
+      category: {
+        type: mongoose.Schema.Types.ObjectId
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+        min: 1
+      }
+    }],
+    interestedAssets: [{
+      asset: {
         type: mongoose.Schema.Types.ObjectId
       },
       quantity: {

@@ -1,8 +1,43 @@
-exports.NavBarController = function($scope, $http, $timeout) {
+exports.NavBarController = function($scope, $uibModal) {
     $scope.openTagsModal = function() {
         console.log('open tags modal here');
+        var modalInstance = $uibModal.open({
+            animation: true,
+            template: '<advanced-search></advanced-search>',
+            //size: size,
+            resolve: {
+                items: function () {
+                    return $scope.items;
+                }
+            }
+        });
+
+        modalInstance.result.then(function (selectedItem) {
+            //this result is not sent back though ... currently
+            $scope.selected = selectedItem;
+        }, function () {
+            console.log('Modal dismissed at: ' + new Date());
+        });
     };
 };
+
+exports.AdvancedSearchController = function($scope, $http, $uibModalInstance) {
+    console.log('scope.categoryAll function called');
+
+    $http.get('/api/v1/category/all').success(function(data) {
+        console.log('api/v1/category/all called successfully');
+        $scope.categories = data.categories;
+        $scope.success = true;
+    });
+
+    $scope.ok = function() {
+        $uibModalInstance.dismiss('cancel');
+    };
+    $scope.cancel = function() {
+        $uibModalInstance.dismiss('cancel');
+    };
+};
+
 exports.AboutController = function($scope, $http, $timeout, auth, store) {
     // LoginCtrl.js
     //angular.module('lazulio').controller( 'LoginCtrl', function ( $scope, auth) {
@@ -15,15 +50,7 @@ exports.AboutController = function($scope, $http, $timeout, auth, store) {
         store.remove('token');
     }
 };
-exports.AdvancedSearchController = function($scope, $http, $timeout) {
-        console.log('scope.categoryAll function called');
 
-        $http.get('/api/v1/category/all').success(function(data) {
-            console.log('api/v1/category/all called successfully');
-            $scope.categories = data.categories;
-            $scope.success = true;
-        });
-};
 
 
 exports.CategorySaveController = function($scope, $http, $timeout) {
