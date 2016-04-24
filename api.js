@@ -18,6 +18,25 @@ module.exports = function(wagner) {
   api.use(bodyparser.json());
     
   /* Category API */
+  api.put('/category/delete/:id', wagner.invoke(function(Category) {
+    return function(req, res) {
+      console.log('server side category delete called');
+      console.log(JSON.stringify(req.params));
+
+      Category.remove({ _id: req.params.id }, function(err) {
+        if (!err) {
+          console.log('deleted successfully');
+          return;
+        }
+        else {
+          console.log(error.toString());
+          return res.
+          status(status.INTERNAL_SERVER_ERROR).
+          json({ error: error.toString() });
+        }
+      });
+    };
+  }));
   api.put('/category/save', wagner.invoke(function(Category) {
     return function(req, res) {
       console.log('server side category save called');
@@ -40,7 +59,6 @@ module.exports = function(wagner) {
       });
     };
   }));
-
   api.get('/category/all', wagner.invoke(function(Category) {
     return function(req, res) {
       var sort = { _id: 1 };

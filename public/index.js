@@ -46,9 +46,10 @@ app.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, 
     when('/', {
         templateUrl: '/views/pages/homepage.ejs'
     }).
-    when('/tags', {
+        //route replaced with popup
+    /*when('/tags', {
         template: '<advanced-search></advanced-search>'
-    }).
+    }).*/
     when('/about', {
         template: '<about></about>'
     });

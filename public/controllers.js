@@ -18,23 +18,32 @@ exports.NavBarController = function($scope, $uibModal) {
         }, function () {
             console.log('Modal dismissed at: ' + new Date());
         });
+        
+        $uibModalInstanceSearch = modalInstance;
     };
 };
 
-exports.AdvancedSearchController = function($scope, $http, $uibModalInstance) {
+exports.AdvancedSearchController = function($scope, $http) {
+    $scope.success = false;
     console.log('scope.categoryAll function called');
 
     $http.get('/api/v1/category/all').success(function(data) {
         console.log('api/v1/category/all called successfully');
         $scope.categories = data.categories;
-        $scope.success = true;
     });
 
     $scope.ok = function() {
-        $uibModalInstance.dismiss('cancel');
+        $uibModalInstanceSearch.dismiss('cancel');
     };
     $scope.cancel = function() {
-        $uibModalInstance.dismiss('cancel');
+        $uibModalInstanceSearch.dismiss('cancel');
+    };
+    $scope.delete = function(_id) {
+        $scope.success = false;
+        $http.put('/api/v1/category/delete/' + _id).success(function(data) {
+            console.log('api/v1/category/delete called successfully');
+            $scope.success = true;
+        });
     };
 };
 
@@ -56,6 +65,7 @@ exports.AboutController = function($scope, $http, $timeout, auth, store) {
 exports.CategorySaveController = function($scope, $http, $timeout) {
   console.log('category save controller properly registered');
   $scope.categorySave = function() {
+      $scope.success = false;
     console.log('scope.categorySave function called');
     console.log('contents: ' + JSON.stringify($scope.category));
     

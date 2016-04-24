@@ -1,18 +1,21 @@
 
 <div class="modal-header">
-    <h3 class="modal-title">I'm a modal!</h3>
+    <h3 class="modal-title">Advanced search</h3>
 </div>
 <div class="modal-body">
     advanced search
     work on showing data from mongo DB here
     <div ng-repeat="category in categories">
-        {{category._id}}
+        {{category._id}}, number of records: ??
+        <button class="btn btn-primary" type="button" ng-click="ok()">SearchBy</button>
+        <button class="btn btn-warning" type="button" ng-click="delete(category._id)">Delete</button>
+    </div>
+    <div ng-show="success">
+        <i class="fa fa-check"></i>
+        deleted!
     </div>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-</div>
-<div>
-
 </div>
