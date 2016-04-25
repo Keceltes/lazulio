@@ -12648,13 +12648,13 @@ exports.CategorySaveController = function($scope, $http, $timeout) {
 };
 
 exports.AssetSaveController = function($scope, $http, $timeout) {
-  console.log('category save controller properly registered');
-  $scope.categorySave = function() {
-    console.log('scope.categorySave function called');
-    console.log('contents: ' + JSON.stringify($scope.category));
+  console.log('asset save controller properly registered');
+  $scope.assetSave = function() {
+    console.log('scope.assetSave function called');
+    console.log('contents: ' + JSON.stringify($scope.asset));
 
-    $http.put('/api/v1/category/save', $scope.category).success(function(data) {
-      console.log('api/v1/category/save called successfully');
+    $http.put('/api/v1/asset/save', $scope.asset).success(function(data) {
+      console.log('api/v1/asset/save called successfully');
       $scope.success = true;
     });
   };

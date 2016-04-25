@@ -1,12 +1,21 @@
 <div>
     asset </br>
-    name <input type="text" ng-model="nameText"/></br>
-    description <input type="text" ng-model="descText"/></br>
-    organization <input  type="text" ng-model="orgText"/></br>
-    development status <input  type="text" ng-model="statusText"/></br>
-    application / market <input type="text" ng-model="applicationText"/></br>
-    advantages <input type="text" ng-model="advantagesText"/></br>
-    contact <input  type="text" ng-model="contactText"/></br>
-    tags <input  type="text" ng-model="tagText"/></br>
-    <button>save</button></br>
+    name <input type="text" ng-model="asset.name"/></br>
+    description <input type="text" ng-model="asset.description"/></br>
+    organization <input  type="text" ng-model="asset.organization"/></br>
+    market <input  type="text" ng-model="asset.market"/></br>
+    IP status <input type="text" ng-model="asset.ipStatus"/></br>
+    problem <input type="text" ng-model="asset.problem"/></br>
+    solution <input  type="text" ng-model="asset.solution"/></br>
+    application <input  type="text" ng-model="asset.application"/></br>
+    advantages <input  type="text" ng-model="asset.advantages"/></br>
+    looking for <input  type="text" ng-model="asset.lookingFor"/></br>
+    contact <input  type="text" ng-model="asset.contact"/></br>
+    tags <input  type="text" ng-model="asset.tags"/></br>
+
+    <button ng-click="assetSave()" >save</button>
+    <div ng-show="success">
+        <i class="fa fa-check"></i>
+        saved!
+    </div>
 </div>

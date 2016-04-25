@@ -41,6 +41,8 @@ module.exports = function(wagner) {
     return function(req, res) {
       console.log('server side category save called');
       console.log(JSON.stringify(req.body));
+
+      //var category = Object.create(Category, req.body);
       var category = new Category({
         _id: req.body._id,
         parent: req.body.parent,
@@ -61,14 +63,66 @@ module.exports = function(wagner) {
   }));
   api.get('/category/all', wagner.invoke(function(Category) {
     return function(req, res) {
-      var sort = { _id: 1 };
+      //var sort = { _id: 1 };
       Category.
       find().
-      sort(sort).
+      //sort(sort).
       exec(handleMany.bind(null, 'categories', res));
     };
   }));
 
+  /*asset API*/
+  api.put('/asset/save', wagner.invoke(function(Asset) {
+    return function(req, res) {
+      console.log('server side asset save called');
+      console.log(JSON.stringify(req.body));
+      console.log(req.body.tags.split(','));
+      var asset = new Asset({
+        //_id: req.body._id,
+        name: req.body.name,
+        description: req.body.description,
+        organization: req.body.organization,
+        market: req.body.market,
+        ipStatus: req.body.ipStatus,
+        problem: req.body.problem,
+        solution: req.body.solution,
+        application: req.body.application,
+        advantages: req.body.advantages,
+        lookingFor: req.body.lookingFor,
+        contact: req.body.contact,
+        pictures: req.body.pictures,
+        tags: req.body.tags.split(',')
+      });
+      console.log(asset);
+      asset.save(function(error, asset) {
+        if (error) {
+          console.log(error.toString());
+          return res.
+          status(status.INTERNAL_SERVER_ERROR).
+          json({ error: error.toString() });
+        }
+        return res.json({ asset: asset });
+      });
+    };
+  }));
+  api.get('/asset/byTag', wagner.invoke(function(Asset) {
+    return function(req, res) {
+      //var sort = { _id: 1 };
+      Category.
+      find().
+      //sort(sort).
+      exec(handleMany.bind(null, 'categories', res));
+    };
+  }));
+  api.get('/asset/byText', wagner.invoke(function(Asset) {
+    return function(req, res) {
+      //var sort = { _id: 1 };
+      Category.
+      find().
+      //sort(sort).
+      exec(handleMany.bind(null, 'categories', res));
+    };
+  }));
   return api;
 };
 
