@@ -12570,6 +12570,17 @@ module.exports = {
 
 },{}],7:[function(require,module,exports){
 exports.NavBarController = function($scope, $uibModal) {
+    //if a function like this exists, it would be great in the NavBar
+    $scope.changeRoute = function(url, forceReload) {
+        $scope = $scope || angular.element(document).scope();
+        if(forceReload || $scope.$$phase) { // that's right TWO dollar signs: $$phase
+            window.location = url;
+        } else {
+            $location.path(url);
+            $scope.$apply();
+        }
+    };
+
     $scope.openTagsModal = function() {
         console.log('open tags modal here');
         var modalInstance = $uibModal.open({
@@ -12586,6 +12597,9 @@ exports.NavBarController = function($scope, $uibModal) {
         modalInstance.result.then(function (selectedItem) {
             //this result is not sent back though ... currently
             $scope.selected = selectedItem;
+            console.log('returned assets - ' + JSON.stringify($scope.selected));
+            
+            $scope.changeRoute('#/asset/results');            
         }, function () {
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -12596,24 +12610,49 @@ exports.NavBarController = function($scope, $uibModal) {
 
 exports.AdvancedSearchController = function($scope, $http) {
     $scope.success = false;
+    $scope.chosenCategories = [];
     console.log('scope.categoryAll function called');
-
     $http.get('/api/v1/category/all').success(function(data) {
         console.log('api/v1/category/all called successfully');
         $scope.categories = data.categories;
     });
+    var updateResults = function() {
+        var tagString = '0';
+        if($scope.chosenCategories.length > 0) {
+            tagString = $scope.chosenCategories.map(function(elem){
+                return elem._id;
+            }).join(",");
+        }
+        $http.get('/api/v1/asset/byTag/' + tagString).success(function(data) {
+            console.log(data);
+            $scope.resultAssets = data.assets;
+            console.log($scope.resultAssets.length);
+        });
+    }
 
+    updateResults();
+    $scope.addToSearchBy = function(category) {
+        $scope.chosenCategories.push(category);
+        updateResults();
+    };
+    $scope.removeSearchBy = function(category) {
+        var index = $scope.chosenCategories.indexOf(category);
+        $scope.chosenCategories.splice(index, 1);
+        updateResults();
+    };
     $scope.ok = function() {
-        $uibModalInstanceSearch.dismiss('cancel');
+        $uibModalInstanceSearch.close($scope.resultAssets);
     };
     $scope.cancel = function() {
         $uibModalInstanceSearch.dismiss('cancel');
     };
-    $scope.delete = function(_id) {
+    $scope.delete = function(category) {
         $scope.success = false;
-        $http.put('/api/v1/category/delete/' + _id).success(function(data) {
+        $http.put('/api/v1/category/delete/' + category._id).success(function(data) {
             console.log('api/v1/category/delete called successfully');
             $scope.success = true;
+            var index = $scope.categories.indexOf(category);
+            $scope.categories.splice(index, 1);
         });
     };
 };
@@ -12658,6 +12697,10 @@ exports.AssetSaveController = function($scope, $http, $timeout) {
       $scope.success = true;
     });
   };
+};
+
+exports.AssetResultController = function($scope, $http, $timeout) {
+    console.log('asset result controller properly registered');
 };
 
 exports.SearchBarController = function($scope, $http) {
@@ -12706,7 +12749,12 @@ exports.saveAsset = function() {
     templateUrl: '/views/pages/save_asset.ejs'
   };
 };
-
+exports.assetResults = function() {
+  return {
+    controller: 'AssetResultController',
+    templateUrl: '/views/pages/asset_result.ejs'
+  };
+};
 
 exports.searchBar = function() {
   return {
@@ -12770,6 +12818,9 @@ app.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, 
     $routeProvider.
     when('/asset/new', {
         template: '<save-asset></save-asset>'
+    }).
+    when('/asset/results', {
+        template: '<asset-results></asset-results>'
     }).
     when('/category/new', {
         template: '<save-category></save-category>'

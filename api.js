@@ -105,22 +105,34 @@ module.exports = function(wagner) {
       });
     };
   }));
-  api.get('/asset/byTag', wagner.invoke(function(Asset) {
+  api.get('/asset/byTag/:ids', wagner.invoke(function(Asset) {
     return function(req, res) {
-      //var sort = { _id: 1 };
-      Category.
-      find().
-      //sort(sort).
-      exec(handleMany.bind(null, 'categories', res));
+      if(req.params.ids[0] != '0')
+      {
+        console.log(req.params.ids);
+        var searchTags = req.params.ids.split(',');
+        //var sort = { _id: 1 };
+        Asset.
+        find({ tags: {$all: searchTags} }). //all values in array searchTags must match
+        //find({ tags: {$in: searchTags} }). //at least 1 value in array searchTags must match
+        //sort(sort).
+        exec(handleMany.bind(null, 'assets', res));
+      }
+      else {
+        console.log('none');
+        Asset.
+        find(). 
+        exec(handleMany.bind(null, 'assets', res));
+      }
     };
   }));
   api.get('/asset/byText', wagner.invoke(function(Asset) {
     return function(req, res) {
       //var sort = { _id: 1 };
-      Category.
+      Asset.
       find().
       //sort(sort).
-      exec(handleMany.bind(null, 'categories', res));
+      exec(handleMany.bind(null, 'assets', res));
     };
   }));
   return api;

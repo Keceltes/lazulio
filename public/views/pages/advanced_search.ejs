@@ -7,8 +7,8 @@
         <span ng-show="category.parent != ''">- </span>
         {{category._id}} (??)
         <span ng-show="category.parent != ''">
-            <button class="btn btn-primary" type="button" ng-click="ok()">SearchBy</button>
-            <button class="btn btn-warning" type="button" ng-click="delete(category._id)">Delete</button>
+            <button class="btn btn-primary" type="button" ng-click="addToSearchBy(category)">SearchBy</button>
+            <button class="btn btn-warning" type="button" ng-click="delete(category)">Delete</button>
         </span>
     </div>
     <div ng-show="success">
@@ -17,6 +17,10 @@
     </div>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+    <div ng-repeat="category in chosenCategories">
+        {{category._id}} <button class="btn btn-warning" type="button" ng-click="removeSearchBy(category)">x</button>
+    </div>
+
+    <button class="btn btn-primary" type="button" ng-click="ok()">OK: {{resultAssets.length}} results</button>
     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
 </div>

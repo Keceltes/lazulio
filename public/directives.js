@@ -20,7 +20,12 @@ exports.saveAsset = function() {
     templateUrl: '/views/pages/save_asset.ejs'
   };
 };
-
+exports.assetResults = function() {
+  return {
+    controller: 'AssetResultController',
+    templateUrl: '/views/pages/asset_result.ejs'
+  };
+};
 
 exports.searchBar = function() {
   return {
