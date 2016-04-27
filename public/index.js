@@ -40,8 +40,14 @@ app.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, 
     when('/asset/new', {
         template: '<save-asset></save-asset>'
     }).
-    when('/asset/results', {
+    when('/asset/results/byTag/:tags', {
         template: '<asset-results></asset-results>'
+    }).
+    when('/asset/results/byText/:text', {
+        template: '<asset-results></asset-results>'
+    }).
+    when('/asset/:id', {
+        template: '<asset></asset>'
     }).
     when('/category/new', {
         template: '<save-category></save-category>'

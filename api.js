@@ -110,7 +110,7 @@ module.exports = function(wagner) {
       if(req.params.ids[0] != '0')
       {
         console.log(req.params.ids);
-        var searchTags = req.params.ids.split(',');
+        var searchTags = req.params.ids.split('+');
         //var sort = { _id: 1 };
         Asset.
         find({ tags: {$all: searchTags} }). //all values in array searchTags must match
@@ -133,6 +133,14 @@ module.exports = function(wagner) {
       find().
       //sort(sort).
       exec(handleMany.bind(null, 'assets', res));
+    };
+  }));
+  api.get('/asset/id/:id', wagner.invoke(function(Asset) {
+    return function(req, res) {
+      Asset.
+      findOne( {_id: req.params.id}).
+      //sort(sort).
+      exec(handleOne.bind(null, 'asset', res));
     };
   }));
   return api;

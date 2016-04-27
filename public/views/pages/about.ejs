@@ -5,7 +5,7 @@
     </br>
     <input type="submit" ng-click="logout()" value="Log out" /></br>
 
-    <span>His name is {{auth.profile.nickname}}</span>
+    <span ng-show="auth.profile">User name is {{auth.profile.nickname}}</span>
     </br>
     TAKE THE TOUR about us and the product</br>
     scroll down</br>

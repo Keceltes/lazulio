@@ -27,6 +27,13 @@ exports.assetResults = function() {
   };
 };
 
+exports.asset = function() {
+  return {
+    controller: 'AssetController',
+    templateUrl: '/views/pages/asset.ejs'
+  }
+}
+
 exports.searchBar = function() {
   return {
     controller: 'SearchBarController',

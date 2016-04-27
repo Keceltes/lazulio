@@ -25,10 +25,16 @@ exports.NavBarController = function($scope, $uibModal) {
 
         modalInstance.result.then(function (selectedItem) {
             //this result is not sent back though ... currently
-            $scope.selected = selectedItem;
-            console.log('returned assets - ' + JSON.stringify($scope.selected));
+            //$scope.selected = selectedItem;  //this needs to be done through linking, not passing of data
+            //however, the following code is duplicated from UpdateResult and may need consolidating
+            var tagString = '0';
+            if(selectedItem.length > 0) {
+                tagString = selectedItem.map(function(elem){
+                    return elem._id;
+                }).join("+");
+            }
             
-            $scope.changeRoute('#/asset/results');            
+            $scope.changeRoute('#/asset/results/byTag/' + tagString);
         }, function () {
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -50,7 +56,7 @@ exports.AdvancedSearchController = function($scope, $http) {
         if($scope.chosenCategories.length > 0) {
             tagString = $scope.chosenCategories.map(function(elem){
                 return elem._id;
-            }).join(",");
+            }).join("+");
         }
         $http.get('/api/v1/asset/byTag/' + tagString).success(function(data) {
             console.log(data);
@@ -70,7 +76,7 @@ exports.AdvancedSearchController = function($scope, $http) {
         updateResults();
     };
     $scope.ok = function() {
-        $uibModalInstanceSearch.close($scope.resultAssets);
+        $uibModalInstanceSearch.close($scope.chosenCategories);
     };
     $scope.cancel = function() {
         $uibModalInstanceSearch.dismiss('cancel');
@@ -128,8 +134,22 @@ exports.AssetSaveController = function($scope, $http, $timeout) {
   };
 };
 
-exports.AssetResultController = function($scope, $http, $timeout) {
+exports.AssetResultController = function($scope, $http, $routeParams, $timeout) {
     console.log('asset result controller properly registered');
+    //need to fill $scope.assets
+    var encoded = encodeURIComponent($routeParams.tags);
+    $http.get('/api/v1/asset/byTag/' + encoded).success(function(data) {
+        $scope.assets = data.assets;
+    });
+};
+exports.AssetController = function($scope, $http, $routeParams, $timeout) {
+    console.log($routeParams.id);
+    var encoded = encodeURIComponent($routeParams.id);
+    console.log('asset  controller properly registered');
+    $http.get('/api/v1/asset/id/' + encoded).success(function(data) {
+        console.log(data);
+        $scope.asset = data.asset;
+    });
 };
 
 exports.SearchBarController = function($scope, $http) {
