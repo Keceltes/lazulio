@@ -18,6 +18,7 @@ var schema = new mongoose.Schema({
     tags: [{type: String}]
 });
 
+//needed to do a free search based on category
 schema.index({ name: 'text' });
 schema.index({ category: 'text' });
 

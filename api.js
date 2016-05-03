@@ -69,7 +69,19 @@ module.exports = function(wagner) {
       //sort(sort).
       exec(handleMany.bind(null, 'categories', res));
     };
-  }));
+    }));
+    
+    api.get('/category/byText/:text', wagner.invoke(function (Category) {
+        return function (req, res) {
+            console.log('search text - ' + req.params.text);
+            Category.
+        find(
+                { $text : { $search : req.params.text } },
+          { score : { $meta: 'textScore' } }).
+        sort({ score: { $meta : 'textScore' } }).
+      exec(handleMany.bind(null, 'categories', res));
+        };
+    }));
 
   /*asset API*/
   api.put('/asset/save', wagner.invoke(function(Asset) {
@@ -125,8 +137,8 @@ module.exports = function(wagner) {
         exec(handleMany.bind(null, 'assets', res));
       }
     };
-  }));
-  api.get('/asset/byText', wagner.invoke(function(Asset) {
+    }));
+  api.get('/asset/byText/:text', wagner.invoke(function(Asset) {
     return function(req, res) {
       //var sort = { _id: 1 };
       Asset.

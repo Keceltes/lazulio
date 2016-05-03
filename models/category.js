@@ -16,7 +16,10 @@ var categorySchema = {
     ref: 'Category'
   }]
 };
+var schema = new mongoose.Schema(categorySchema);
 
-module.exports = new mongoose.Schema(categorySchema);
+//needed to do a free search based on category
+schema.index({ _id: 'text' });
+module.exports = schema;
 //schema (below) needs to be used in asset class
 module.exports.categorySchema = categorySchema;
