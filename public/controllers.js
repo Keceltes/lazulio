@@ -1,6 +1,6 @@
 exports.NavBarController = function ($scope, $uibModal) {
     //if a function like this exists, it would be great in the NavBar
-    $scope.chosenCategories = [];
+    $scope.savedSearchCategories = [];
     $scope.changeRoute = function (url, forceReload) {
         $scope = $scope || angular.element(document).scope();
         if (forceReload || $scope.$$phase) { // that's right TWO dollar signs: $$phase
@@ -10,7 +10,9 @@ exports.NavBarController = function ($scope, $uibModal) {
             $scope.$apply();
         }
     };
-    
+     $scope.freeTextSearch = function () {
+        $scope.changeRoute('#/asset/results/byText/' + $scope.searchText);
+    };
     $scope.openTagsModal = function () {
         console.log('open tags modal here');
         var modalInstance = $uibModal.open({
@@ -34,7 +36,7 @@ exports.NavBarController = function ($scope, $uibModal) {
                     return elem._id;
                 }).join("+");
             }
-            
+            $scope.savedSearchCategories = selectedItem.slice();
             $scope.changeRoute('#/asset/results/byTag/' + tagString);
         }, function () {
             console.log('Modal dismissed at: ' + new Date());
@@ -46,11 +48,7 @@ exports.NavBarController = function ($scope, $uibModal) {
 
 exports.AdvancedSearchController = function ($scope, $http) {
     $scope.success = false;
-    if ($scope.chosenCategories == undefined) {
-        console.log('undefined chosenCategories');
-        $scope.chosenCategories = [];
-    }
-    $scope.chosenCategoriesBackup = $scope.chosenCategories.slice();
+    $scope.chosenCategories = $scope.savedSearchCategories.slice();
     console.log('scope.categoryAll function called');
     $http.get('/api/v1/category/all').success(function (data) {
         console.log('api/v1/category/all called successfully');
@@ -68,7 +66,6 @@ exports.AdvancedSearchController = function ($scope, $http) {
             $scope.resultAssets = data.assets;
             console.log($scope.resultAssets.length);
         });
-        console.log($scope.chosenCategoriesBackup.length + ' - ' + $scope.chosenCategories.length);
     }
     
     
@@ -78,20 +75,23 @@ exports.AdvancedSearchController = function ($scope, $http) {
         updateResults();
     };
     $scope.addToSearchBy = function (category) {
-        $scope.chosenCategories.push(category);
-        updateResults();
+        var index = $scope.chosenCategories.indexOf(category);
+        if(index == -1) {
+            $scope.chosenCategories.push(category);
+            updateResults();
+        }
     };
     $scope.removeSearchBy = function (category) {
         var index = $scope.chosenCategories.indexOf(category);
-        $scope.chosenCategories.splice(index, 1);
-        updateResults();
+        if (index != -1) {
+            $scope.chosenCategories.splice(index, 1);
+            updateResults();
+        }
     };
     $scope.ok = function () {
         $uibModalInstanceSearch.close($scope.chosenCategories);
     };
     $scope.cancel = function () {
-        $scope.chosenCategories = $scope.chosenCategoriesBackup.slice();
-        console.log($scope.chosenCategoriesBackup.length + ' - ' + $scope.chosenCategories.length);
         $uibModalInstanceSearch.dismiss('cancel');
     };
     $scope.delete = function (category) {
@@ -150,10 +150,19 @@ exports.AssetSaveController = function ($scope, $http, $timeout) {
 exports.AssetResultController = function ($scope, $http, $routeParams, $timeout) {
     console.log('asset result controller properly registered');
     //need to fill $scope.assets
-    var encoded = encodeURIComponent($routeParams.tags);
-    $http.get('/api/v1/asset/byTag/' + encoded).success(function (data) {
-        $scope.assets = data.assets;
-    });
+    if ($routeParams.tags != undefined) {
+        var encoded = encodeURIComponent($routeParams.tags);
+        $http.get('/api/v1/asset/byTag/' + encoded).success(function (data) {
+            $scope.assets = data.assets;
+        });
+    }
+    else if ($routeParams.text != undefined) {
+        $http.
+    get('/api/v1/asset/byText/' + $routeParams.text).
+    success(function (data) {
+            $scope.assets = data.assets;
+        });
+    }
 };
 exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     console.log($routeParams.id);
@@ -170,13 +179,13 @@ exports.SearchBarController = function ($scope, $http) {
     // `/api/v1/product/text/:searchText` and expose the response's
     // `products` property as `results` to the scope.
     console.log('searchBarController being called');
-    $scope.freeSearch = function () {
+    /*$scope.freeSearch = function () {
         $http.
     get('/api/v1/asset/byText/' + $scope.searchText).
     success(function (data) {
             $scope.results = data.assets;
         });
-    };
+    };*/
     
     $scope.update = function () {
         $http.

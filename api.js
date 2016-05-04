@@ -142,8 +142,9 @@ module.exports = function(wagner) {
     return function(req, res) {
       //var sort = { _id: 1 };
       Asset.
-      find().
-      //sort(sort).
+      find({ $text: { $search: req.params.text } }
+          , { score: { $meta: "textScore" } })
+          .sort({ score: { $meta: "textScore" } }).
       exec(handleMany.bind(null, 'assets', res));
     };
   }));

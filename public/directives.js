@@ -1,6 +1,19 @@
 //direct to specific html pages
 //links controller with url
 //also, all exports.camelCase get called by camel-case in html
+exports.myEnter = function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if (event.which === 13) {
+                scope.$apply(function () {
+                    scope.$eval(attrs.myEnter);
+                });
+                
+                event.preventDefault();
+            }
+        });
+    };
+};
 exports.about = function() {
   return {
     controller: 'AboutController',

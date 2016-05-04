@@ -3,8 +3,11 @@ TODO: this HTML should expose a search bar
 !-->
 
 <div >
-    <input type="text" ng-model="searchText" ng-change="update()" style="width: 400px;"/>
-  <div  class="autocomplete-result" ng-repeat="category in results">
+    <input type="text" ng-model="searchText" ng-change="update()" style="width: 400px;"  my-enter="freeTextSearch()" />
+  <div  class="autocomplete-result" ng-show="results.length > 0"  style='background:white;'>
+    Suggested tags:
+  </div>
+  <div  class="autocomplete-result" ng-repeat="category in results"  style='background:white;'>
     <a ng-href="#/asset/results/byTag/{{category._id}}">
       {{category._id}}
     </a>
