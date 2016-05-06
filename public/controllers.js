@@ -52,7 +52,17 @@ exports.AdvancedSearchController = function ($scope, $http) {
     console.log('scope.categoryAll function called');
     $http.get('/api/v1/category/all').success(function (data) {
         console.log('api/v1/category/all called successfully');
-        $scope.categories = data.categories;
+        //$scope.categories = data.categories;
+        $scope.categories = [];
+        var currentColumn = [];
+        for (var i = 0; i < data.categories.length; i++) {
+            if (data.categories[i].parent == '' && i != 0) {
+                $scope.categories.push(currentColumn);
+                currentColumn = [];
+            }
+            currentColumn.push(data.categories[i]);
+        }
+        $scope.categories.push(currentColumn);
     });
     var updateResults = function () {
         var tagString = '0';
@@ -198,4 +208,16 @@ exports.SearchBarController = function ($scope, $http) {
     setTimeout(function () {
         $scope.$emit('SearchBarController');
     }, 0);
+};
+
+exports.PopularFeedController = function ($scope, $http) {
+    $http.get('/api/v1/asset/popular').success(function (data) {
+        $scope.assets = data.assets;
+    });
+};
+exports.FollowedSearchFeedController = function ($scope, $http) {
+
+};
+exports.FollowedAssetFeedController = function ($scope, $http) {
+
 };

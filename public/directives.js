@@ -67,3 +67,22 @@ exports.advancedSearch = function() {
     templateUrl: '/views/pages/advanced_search.ejs'
   };
 };
+
+exports.followedAssetFeed = function () {
+    return {
+        controller: 'FollowedAssetFeedController',
+        templateUrl: '/views/partials/followed_asset_feed.ejs'
+    };
+};
+exports.followedSearchFeed = function () {
+    return {
+        controller: 'FollowedSearchFeedController',
+        templateUrl: '/views/partials/followed_search_feed.ejs'
+    };
+};
+exports.popularFeed = function () {
+    return {
+        controller: 'PopularFeedController',
+        templateUrl: '/views/partials/popular_feed.ejs'
+    };
+};

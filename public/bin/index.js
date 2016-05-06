@@ -12623,7 +12623,17 @@ exports.AdvancedSearchController = function ($scope, $http) {
     console.log('scope.categoryAll function called');
     $http.get('/api/v1/category/all').success(function (data) {
         console.log('api/v1/category/all called successfully');
-        $scope.categories = data.categories;
+        //$scope.categories = data.categories;
+        $scope.categories = [];
+        var currentColumn = [];
+        for (var i = 0; i < data.categories.length; i++) {
+            if (data.categories[i].parent == '' && i != 0) {
+                $scope.categories.push(currentColumn);
+                currentColumn = [];
+            }
+            currentColumn.push(data.categories[i]);
+        }
+        $scope.categories.push(currentColumn);
     });
     var updateResults = function () {
         var tagString = '0';
@@ -12771,6 +12781,17 @@ exports.SearchBarController = function ($scope, $http) {
     }, 0);
 };
 
+exports.PopularFeedController = function ($scope, $http) {
+    $http.get('/api/v1/asset/popular').success(function (data) {
+        $scope.assets = data.assets;
+    });
+};
+exports.FollowedSearchFeedController = function ($scope, $http) {
+
+};
+exports.FollowedAssetFeedController = function ($scope, $http) {
+
+};
 },{}],8:[function(require,module,exports){
 //direct to specific html pages
 //links controller with url
@@ -12841,6 +12862,25 @@ exports.advancedSearch = function() {
     templateUrl: '/views/pages/advanced_search.ejs'
   };
 };
+
+exports.followedAssetFeed = function () {
+    return {
+        controller: 'FollowedAssetFeedController',
+        templateUrl: '/views/partials/followed_asset_feed.ejs'
+    };
+};
+exports.followedSearchFeed = function () {
+    return {
+        controller: 'FollowedSearchFeedController',
+        templateUrl: '/views/partials/followed_search_feed.ejs'
+    };
+};
+exports.popularFeed = function () {
+    return {
+        controller: 'PopularFeedController',
+        templateUrl: '/views/partials/popular_feed.ejs'
+    };
+};
 },{}],9:[function(require,module,exports){
 /**
  * Created by Keceltes on 4/15/2016.
@@ -12855,14 +12895,14 @@ var directives = require('./directives');
 var services = require('./services');
 
 var components = angular.module('lazulio.components', ['ng']);
-_.each(controllers, function(controller, name) {
+_.each(controllers, function (controller, name) {
     console.log('anything in here? ' + name);
     components.controller(name, controller);
 });
-_.each(directives, function(directive, name) {
+_.each(directives, function (directive, name) {
     components.directive(name, directive);
 });
-_.each(services, function(service, name) {
+_.each(services, function (service, name) {
     components.service(name, service);
 });
 
@@ -12878,7 +12918,7 @@ var app = angular.module('lazulio', ['lazulio.components', 'auth0', 'angular-sto
 // this routeProvider is for handling different pages
 
 //you would use templateUrl if there's no controller needed, otherwise use template:
-app.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, $locationProvider,
+app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $locationProvider,
                                     jwtInterceptorProvider) {
     $routeProvider.
     when('/asset/new', {
@@ -12899,46 +12939,48 @@ app.config( function myAppConfig ( $routeProvider, authProvider, $httpProvider, 
     when('/', {
         templateUrl: '/views/pages/homepage.ejs'
     }).
-        //route replaced with popup
-    /*when('/tags', {
-        template: '<advanced-search></advanced-search>'
-    }).*/
+    when('/pharma', {
+        templateUrl: '/views/pages/homepage_pharma.ejs'
+    }).
+    when('/tto', {
+        templateUrl: '/views/pages/homepage_tto.ejs'
+    }).
     when('/about', {
         template: '<about></about>'
     });
-
+    
     authProvider.init({
         domain: 'lazulio.auth0.com',
         clientID: 'j11MaWle1aly6QSB5MgGr1BEosCeDqfT'
     });
-
+    
     //app.js, not sure if this belongs here in particular though
-    authProvider.on('loginSuccess', function($location, profilePromise, idToken, store) {
+    authProvider.on('loginSuccess', function ($location, profilePromise, idToken, store) {
         console.log("Login Success");
-        profilePromise.then(function(profile) {
+        profilePromise.then(function (profile) {
             store.set('profile', profile);
             store.set('token', idToken);
         });
         $location.path('/');
     });
-
-    authProvider.on('loginFailure', function() {
+    
+    authProvider.on('loginFailure', function () {
         // Error Callback
         console.log("Login Failure");
     });
-
+    
     // We're annotating this function so that the `store` is injected correctly when this file is minified
-    jwtInterceptorProvider.tokenGetter = ['store', function(store) {
-        // Return the saved token
-        return store.get('token');
-    }];
-
+    jwtInterceptorProvider.tokenGetter = ['store', function (store) {
+            // Return the saved token
+            return store.get('token');
+        }];
+    
     $httpProvider.interceptors.push('jwtInterceptor');
 })
-    .run(function($rootScope, auth, store, jwtHelper, $location) {
+    .run(function ($rootScope, auth, store, jwtHelper, $location) {
     // This hooks al auth events to check everything as soon as the app starts
     auth.hookEvents();
-    $rootScope.$on('$locationChangeStart', function() {
+    $rootScope.$on('$locationChangeStart', function () {
         var token = store.get('token');
         if (token) {
             if (!jwtHelper.isTokenExpired(token)) {

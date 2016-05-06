@@ -15,7 +15,8 @@ var schema = new mongoose.Schema({
     contact: {type: String},
     // Pictures must start with "http://"
     pictures: [{type: String, match: /^http:\/\//i}],
-    tags: [{type: String}]
+    tags: [{ type: String }],
+    viewCount: {type: Number}
 });
 
 //needed to do a free search based on category

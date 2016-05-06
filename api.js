@@ -66,7 +66,7 @@ module.exports = function(wagner) {
       //var sort = { _id: 1 };
       Category.
       find().
-      //sort(sort).
+      //sort({parent: 1}).
       exec(handleMany.bind(null, 'categories', res));
     };
     }));
@@ -137,6 +137,15 @@ module.exports = function(wagner) {
         exec(handleMany.bind(null, 'assets', res));
       }
     };
+    }));
+    api.get('/asset/popular', wagner.invoke(function (Asset) {
+        return function (req, res) {
+        Asset.
+        find().
+        sort({ viewCount: -1 }).
+        limit(5).
+        exec(handleMany.bind(null, 'assets', res));
+        };
     }));
   api.get('/asset/byText/:text', wagner.invoke(function(Asset) {
     return function(req, res) {
