@@ -119,7 +119,16 @@ exports.AboutController = function ($scope, $http, $timeout, auth, store) {
     // LoginCtrl.js
     //angular.module('lazulio').controller( 'LoginCtrl', function ( $scope, auth) {
     $scope.auth = auth;
-    //});
+    $http.
+    get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
+        $scope.user = data.user;
+    }, function (data) {
+        console.log('user not found, creating now');
+        $http.put('/api/v1/user/save', auth).success(function (data) {
+            console.log('new user saved');
+            $scope.success = true;
+        });
+    });
     
     $scope.logout = function () {
         auth.signout();
@@ -185,18 +194,7 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
 };
 
 exports.SearchBarController = function ($scope, $http) {
-    // TODO: this function should make an HTTP request to
-    // `/api/v1/product/text/:searchText` and expose the response's
-    // `products` property as `results` to the scope.
-    console.log('searchBarController being called');
-    /*$scope.freeSearch = function () {
-        $http.
-    get('/api/v1/asset/byText/' + $scope.searchText).
-    success(function (data) {
-            $scope.results = data.assets;
-        });
-    };*/
-    
+    console.log('searchBarController being called');    
     $scope.update = function () {
         $http.
     get('/api/v1/category/byText/' + $scope.searchText).
@@ -212,12 +210,17 @@ exports.SearchBarController = function ($scope, $http) {
 
 exports.PopularFeedController = function ($scope, $http) {
     $http.get('/api/v1/asset/popular').success(function (data) {
-        $scope.assets = data.assets;
+        $scope.popularAssets = data.assets;
     });
 };
 exports.FollowedSearchFeedController = function ($scope, $http) {
-
+    $http.get('/api/v1/asset/followed').success(function (data) {
+        $scope.feedAssets = data.assets;
+    });
 };
 exports.FollowedAssetFeedController = function ($scope, $http) {
 
+};
+exports.MyAccountController = function ($scope, $http, auth) {
+    $scope.auth = auth;
 };

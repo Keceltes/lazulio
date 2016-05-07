@@ -86,3 +86,9 @@ exports.popularFeed = function () {
         templateUrl: '/views/partials/popular_feed.ejs'
     };
 };
+exports.myAccount = function () {
+    return {
+        controller: 'MyAccountController',
+        templateUrl: '/views/pages/my_account.ejs'
+    }
+}

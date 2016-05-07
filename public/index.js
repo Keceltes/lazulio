@@ -63,6 +63,9 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
     }).
     when('/about', {
         template: '<about></about>'
+    }).
+    when('/myaccount', {
+        template: '<my-account></my-account>'
     });
     
     authProvider.init({
