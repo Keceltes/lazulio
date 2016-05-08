@@ -12569,9 +12569,38 @@ module.exports = {
 }).call(this);
 
 },{}],7:[function(require,module,exports){
-exports.NavBarController = function ($scope, $uibModal) {
-    //if a function like this exists, it would be great in the NavBar
+/*For example, you could have a Users table that would have a copy of each user authenticated by Auth0.
+ * Every time a users logs in, you would search the table for that user.
+ * If the user does not exist, you would create a new record.
+ * Ifit does exist, you would update all fields, essentially keeping a local copy of the user data.*/
+exports.HomePageController = function ($http, $scope, auth) {
+
+}
+
+exports.NavBarController = function ($http, $scope, $uibModal, auth) {
+    $scope.auth = auth;
+    if (auth.profile != undefined) {
+        $http.
+        get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
+            //if success
+            console.log('user found: ' + data.data.user.username);
+            $scope.user = data.data.user; //when success, only need 1 data, not sure why then requires 2, but at least the success / failure is fine
+        }, function (data) {
+            //if failure
+            console.log('user not found, creating now');
+            $http.put('/api/v1/user/save', auth).success(function (data) {
+                //save doesn't return the data yet, need to edit API
+                console.log('new user saved: ' + data.user.username);
+                $scope.user = data.user;
+            });
+        });
+    }
+    else {
+        console.log('auth profile undefined');
+    }
+
     $scope.savedSearchCategories = [];
+    //if a function like this exists, it would be great in the NavBar
     $scope.changeRoute = function (url, forceReload) {
         $scope = $scope || angular.element(document).scope();
         if (forceReload || $scope.$$phase) { // that's right TWO dollar signs: $$phase
@@ -12689,18 +12718,7 @@ exports.AdvancedSearchController = function ($scope, $http) {
 exports.AboutController = function ($scope, $http, $timeout, auth, store) {
     // LoginCtrl.js
     //angular.module('lazulio').controller( 'LoginCtrl', function ( $scope, auth) {
-    $scope.auth = auth;
-    $http.
-    get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
-        $scope.user = data.user;
-    }, function (data) {
-        console.log('user not found, creating now');
-        $http.put('/api/v1/user/save', auth).success(function (data) {
-            console.log('new user saved');
-            $scope.success = true;
-        });
-    });
-    
+   
     $scope.logout = function () {
         auth.signout();
         store.remove('profile');
@@ -12793,7 +12811,6 @@ exports.FollowedAssetFeedController = function ($scope, $http) {
 
 };
 exports.MyAccountController = function ($scope, $http, auth) {
-    $scope.auth = auth;
 };
 },{}],8:[function(require,module,exports){
 //direct to specific html pages
@@ -12810,6 +12827,12 @@ exports.myEnter = function () {
                 event.preventDefault();
             }
         });
+    };
+};
+exports.homepage = function () {
+    return {
+        controller: 'HomePageController',
+        templateUrl: '/views/pages/homepage.ejs'
     };
 };
 exports.about = function() {
@@ -12946,7 +12969,7 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
         template: '<save-category></save-category>'
     }).
     when('/', {
-        templateUrl: '/views/pages/homepage.ejs'
+        template: '<homepage></homepage>'
     }).
     when('/pharma', {
         templateUrl: '/views/pages/homepage_pharma.ejs'
@@ -12991,19 +13014,35 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
 })
     .run(function ($rootScope, auth, store, jwtHelper, $location) {
     // This hooks al auth events to check everything as soon as the app starts
-    auth.hookEvents();
-    $rootScope.$on('$locationChangeStart', function () {
-        var token = store.get('token');
-        if (token) {
-            if (!jwtHelper.isTokenExpired(token)) {
-                if (!auth.isAuthenticated) {
-                    auth.authenticate(store.get('profile'), token);
+        auth.hookEvents();
+        $rootScope.$on('$locationChangeStart', function () {
+            var token = store.get('token');
+            if (token) {
+                //first check if you can authenticate automatically
+                if (!jwtHelper.isTokenExpired(token)) {
+                    if (!auth.isAuthenticated) {
+                        console.log('auto authenticating');
+                        auth.authenticate(store.get('profile'), token);
+                    }
                 }
-            } else {
-                // Either show the login page or use the refresh token to get a new idToken
-                $location.path('/');
-            }
+                //if still not, redirect to authentication page
+                /*if (!auth.isAuthenticated) {
+                    console.log('not authenticated');
+                    event.preventDefault();
+                    $location.path('#/about');
+                }*/
+                else {
+                    console.log('authenticated and logging in normal');
+                    // Either show the login page or use the refresh token to get a new idToken
+                    $location.path('/');
+                }
         }
+            //auth0 uses access_token to know what page to redirect to after login
+            else if (document.URL.indexOf('access_token') == -1) {
+                console.log('not authenticated: ' + document.URL);
+                event.preventDefault();
+                $location.path('/about');
+            }
     });
 });
 

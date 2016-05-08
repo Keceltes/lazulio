@@ -53,7 +53,7 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
         template: '<save-category></save-category>'
     }).
     when('/', {
-        templateUrl: '/views/pages/homepage.ejs'
+        template: '<homepage></homepage>'
     }).
     when('/pharma', {
         templateUrl: '/views/pages/homepage_pharma.ejs'
@@ -98,18 +98,34 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
 })
     .run(function ($rootScope, auth, store, jwtHelper, $location) {
     // This hooks al auth events to check everything as soon as the app starts
-    auth.hookEvents();
-    $rootScope.$on('$locationChangeStart', function () {
-        var token = store.get('token');
-        if (token) {
-            if (!jwtHelper.isTokenExpired(token)) {
-                if (!auth.isAuthenticated) {
-                    auth.authenticate(store.get('profile'), token);
+        auth.hookEvents();
+        $rootScope.$on('$locationChangeStart', function () {
+            var token = store.get('token');
+            if (token) {
+                //first check if you can authenticate automatically
+                if (!jwtHelper.isTokenExpired(token)) {
+                    if (!auth.isAuthenticated) {
+                        console.log('auto authenticating');
+                        auth.authenticate(store.get('profile'), token);
+                    }
                 }
-            } else {
-                // Either show the login page or use the refresh token to get a new idToken
-                $location.path('/');
-            }
+                //if still not, redirect to authentication page
+                /*if (!auth.isAuthenticated) {
+                    console.log('not authenticated');
+                    event.preventDefault();
+                    $location.path('#/about');
+                }*/
+                else {
+                    console.log('authenticated and logging in normal');
+                    // Either show the login page or use the refresh token to get a new idToken
+                    $location.path('/');
+                }
         }
+            //auth0 uses access_token to know what page to redirect to after login
+            else if (document.URL.indexOf('access_token') == -1) {
+                console.log('not authenticated: ' + document.URL);
+                event.preventDefault();
+                $location.path('/about');
+            }
     });
 });

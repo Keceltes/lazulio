@@ -27,6 +27,7 @@ module.exports = function (wagner) {
     }));
     api.put('/user/save', wagner.invoke(function (User) {
         return function (req, res) {
+            console.log('saving new user - ' + req.params.id);
             var user = new User({
                 username: req.body.profile.user_id
             });

@@ -1,6 +1,35 @@
-exports.NavBarController = function ($scope, $uibModal) {
-    //if a function like this exists, it would be great in the NavBar
+/*For example, you could have a Users table that would have a copy of each user authenticated by Auth0.
+ * Every time a users logs in, you would search the table for that user.
+ * If the user does not exist, you would create a new record.
+ * Ifit does exist, you would update all fields, essentially keeping a local copy of the user data.*/
+exports.HomePageController = function ($http, $scope, auth) {
+
+}
+
+exports.NavBarController = function ($http, $scope, $uibModal, auth) {
+    $scope.auth = auth;
+    if (auth.profile != undefined) {
+        $http.
+        get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
+            //if success
+            console.log('user found: ' + data.data.user.username);
+            $scope.user = data.data.user; //when success, only need 1 data, not sure why then requires 2, but at least the success / failure is fine
+        }, function (data) {
+            //if failure
+            console.log('user not found, creating now');
+            $http.put('/api/v1/user/save', auth).success(function (data) {
+                //save doesn't return the data yet, need to edit API
+                console.log('new user saved: ' + data.user.username);
+                $scope.user = data.user;
+            });
+        });
+    }
+    else {
+        console.log('auth profile undefined');
+    }
+
     $scope.savedSearchCategories = [];
+    //if a function like this exists, it would be great in the NavBar
     $scope.changeRoute = function (url, forceReload) {
         $scope = $scope || angular.element(document).scope();
         if (forceReload || $scope.$$phase) { // that's right TWO dollar signs: $$phase
@@ -118,18 +147,7 @@ exports.AdvancedSearchController = function ($scope, $http) {
 exports.AboutController = function ($scope, $http, $timeout, auth, store) {
     // LoginCtrl.js
     //angular.module('lazulio').controller( 'LoginCtrl', function ( $scope, auth) {
-    $scope.auth = auth;
-    $http.
-    get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
-        $scope.user = data.user;
-    }, function (data) {
-        console.log('user not found, creating now');
-        $http.put('/api/v1/user/save', auth).success(function (data) {
-            console.log('new user saved');
-            $scope.success = true;
-        });
-    });
-    
+   
     $scope.logout = function () {
         auth.signout();
         store.remove('profile');
@@ -222,5 +240,4 @@ exports.FollowedAssetFeedController = function ($scope, $http) {
 
 };
 exports.MyAccountController = function ($scope, $http, auth) {
-    $scope.auth = auth;
 };

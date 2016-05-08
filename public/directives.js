@@ -14,6 +14,12 @@ exports.myEnter = function () {
         });
     };
 };
+exports.homepage = function () {
+    return {
+        controller: 'HomePageController',
+        templateUrl: '/views/pages/homepage.ejs'
+    };
+};
 exports.about = function() {
   return {
     controller: 'AboutController',
