@@ -19,7 +19,7 @@ module.exports = function (wagner) {
     /* User API */
     api.get('/user/:id', wagner.invoke(function (User) {
         return function (req, res) {
-            console.log('search text - ' + req.params.id);
+            console.log('user id - ' + req.params.id);
             User.
         findOne({username: req.params.id}).
       exec(handleOne.bind(null, 'user', res));
@@ -42,6 +42,52 @@ module.exports = function (wagner) {
             });
         };
     }));
+    /*User Cart API */
+    api.put('/me/cart', wagner.invoke(function (User) {
+        return function (req, res) {
+            console.log('1');
+            try {
+                console.log('2');
+                var cart = req.body.interestedAssets;
+            } catch (e) {
+                console.log('error');
+                return res.
+          status(status.BAD_REQUEST).
+          json({ error: 'No cart specified!' });
+            }
+            console.log('3');
+            console.log('req body: ' + JSON.stringify(req.body));
+            User.update({ username: req.body.username },
+            {
+                interestedAssets: cart
+            },
+             { upsert: true },
+             function (err, numAffected) { 
+                console.log('num affected: ' + JSON.stringify(numAffected));
+                console.log('err: ' + JSON.stringify(err));
+            }
+            );
+            /*req.user.interestedAssets = cart; //req.user is done by the mean-retail example using Facebook login
+            req.user.save(function (error, user) {
+                if (error) {
+                    return res.
+            status(status.INTERNAL_SERVER_ERROR).
+            json({ error: error.toString() });
+                }
+                return res.json({ user: user });
+            });*/
+        };
+    }));
+    
+    api.get('/me', function (req, res) {
+        if (!req.user) {
+            return res.
+        status(status.UNAUTHORIZED).
+        json({ error: 'Not logged in' });
+        }
+        
+        req.user.populate({ path: 'data.interestedAssets', model: 'Asset' }, handleOne.bind(null, 'user', res));
+    });
     
     /* Category API */
     api.put('/category/delete/:id', wagner.invoke(function (Category) {

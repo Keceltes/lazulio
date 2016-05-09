@@ -1,6 +1,15 @@
 <div>
     <h1>name: {{asset.name}}</h1>
-  <button>follow this asset</button>
+  <!-- this will be repeated underneath each product -->
+<div class="cart-button" ng-click="addToCart(asset);">
+  <div ng-show="!following">
+    Follow
+  </div>
+  <div ng-show="following">
+    Followed
+  </div>
+</div>
+
   current number of followers: ??<br/>
     description: {{asset.description}}<br/>
     organization: {{asset.organization}}<br/>

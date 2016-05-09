@@ -12598,7 +12598,7 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth) {
     else {
         console.log('auth profile undefined');
     }
-
+    
     $scope.savedSearchCategories = [];
     //if a function like this exists, it would be great in the NavBar
     $scope.changeRoute = function (url, forceReload) {
@@ -12610,7 +12610,7 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth) {
             $scope.$apply();
         }
     };
-     $scope.freeTextSearch = function () {
+    $scope.freeTextSearch = function () {
         $scope.changeRoute('#/asset/results/byText/' + $scope.searchText);
     };
     $scope.openTagsModal = function () {
@@ -12686,7 +12686,7 @@ exports.AdvancedSearchController = function ($scope, $http) {
     };
     $scope.addToSearchBy = function (category) {
         var index = $scope.chosenCategories.indexOf(category);
-        if(index == -1) {
+        if (index == -1) {
             $scope.chosenCategories.push(category);
             updateResults();
         }
@@ -12718,7 +12718,7 @@ exports.AdvancedSearchController = function ($scope, $http) {
 exports.AboutController = function ($scope, $http, $timeout, auth, store) {
     // LoginCtrl.js
     //angular.module('lazulio').controller( 'LoginCtrl', function ( $scope, auth) {
-   
+    
     $scope.logout = function () {
         auth.signout();
         store.remove('profile');
@@ -12779,11 +12779,47 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     $http.get('/api/v1/asset/id/' + encoded).success(function (data) {
         console.log(data);
         $scope.asset = data.asset;
+        $scope.following = matchedIdFound({ asset: data.asset._id }, $scope.user.interestedAssets);
     });
+    $scope.addToCart = function (asset) {
+        if ($scope.following) {
+            console.log('already in cart, should remove');
+        }
+        else {
+            console.log('not in cart, should add');
+            $scope.user.interestedAssets.push(obj);
+            $http.
+          put('/api/v1/me/cart', $scope.user).
+          success(function (data) {
+                //need to load the user after a save?
+                /*$http.
+                get('/api/v1/me').
+                success(function (data) {
+                        s.user = data.user;
+                    }).
+                error(function (data, status) {
+                if (status === status.UNAUTHORIZED) {
+                    s.user = null;
+                }
+                });*/
+            console.log('add to cart successful?');
+            });
+        }
+    };
+    var matchedIdFound = function (obj, array) {
+        for (var i = 0; i < array.length; i++) {
+            console.log('1: ' + array[i].asset);
+            console.log('2: ' + obj.asset);
+            if (array[i].asset == obj.asset) {
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
 exports.SearchBarController = function ($scope, $http) {
-    console.log('searchBarController being called');    
+    console.log('searchBarController being called');
     $scope.update = function () {
         $http.
     get('/api/v1/category/byText/' + $scope.searchText).
