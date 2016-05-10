@@ -16,9 +16,7 @@ module.exports = new mongoose.Schema({
   data: {
     oauth: { type: String, required: true },*/
     interestedTags: [{
-      category: {
-        type: mongoose.Schema.Types.ObjectId
-      }
+      type: String
     }],
     interestedAssets: [{
       asset: {

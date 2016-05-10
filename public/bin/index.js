@@ -12577,7 +12577,7 @@ exports.HomePageController = function ($http, $scope, auth) {
 
 }
 
-exports.NavBarController = function ($http, $scope, $uibModal, auth) {
+exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
     $scope.auth = auth;
     if (auth.profile != undefined) {
         $http.
@@ -12604,7 +12604,9 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth) {
     $scope.changeRoute = function (url, forceReload) {
         $scope = $scope || angular.element(document).scope();
         if (forceReload || $scope.$$phase) { // that's right TWO dollar signs: $$phase
-            window.location = url;
+            //total hack: i don't wike it
+            $timeout(function () { window.location = url; }, 500);
+            //window.location = url;
         } else {
             $location.path(url);
             $scope.$apply();
@@ -12666,12 +12668,22 @@ exports.AdvancedSearchController = function ($scope, $http) {
     });
     var updateResults = function () {
         var tagString = '0';
+        console.log('before: ' + JSON.stringify($scope.chosenCategories));
+        $scope.chosenCategories = $scope.chosenCategories.sort(function (a, b) {
+            if (a._id < b._id)
+                return -1;
+            else if (a._id > b._id)
+                return 1;
+            else
+                return 0;
+        });
+        console.log('after: ' + JSON.stringify($scope.chosenCategories));
         if ($scope.chosenCategories.length > 0) {
             tagString = $scope.chosenCategories.map(function (elem) {
                 return elem._id;
             }).join("+");
         }
-        $http.get('/api/v1/asset/byTag/' + tagString).success(function (data) {
+        $http.get('/api/v1/asset/byTag/and/' + tagString).success(function (data) {
             console.log(data);
             $scope.resultAssets = data.assets;
             console.log($scope.resultAssets.length);
@@ -12757,20 +12769,38 @@ exports.AssetSaveController = function ($scope, $http, $timeout) {
 
 exports.AssetResultController = function ($scope, $http, $routeParams, $timeout) {
     console.log('asset result controller properly registered');
+    var query;
     //need to fill $scope.assets
     if ($routeParams.tags != undefined) {
         var encoded = encodeURIComponent($routeParams.tags);
-        $http.get('/api/v1/asset/byTag/' + encoded).success(function (data) {
-            $scope.assets = data.assets;
-        });
+        query = 'byTag/and/' + encoded;
     }
     else if ($routeParams.text != undefined) {
-        $http.
-    get('/api/v1/asset/byText/' + $routeParams.text).
-    success(function (data) {
-            $scope.assets = data.assets;
-        });
+        query = 'byText/' + $routeParams.text;
     }
+    $http.
+        get('/api/v1/asset/' + query).
+        success(function (data) {
+        $scope.assets = data.assets;
+        $scope.following = $scope.user.interestedTags.indexOf(query);
+        console.log('search found? ' + $scope.user.interestedTags.indexOf(query));
+    });
+    $scope.addToCart = function () {
+        if ($scope.following > -1) {
+            console.log('already in cart, should remove');
+            $scope.user.interestedTags.splice($scope.following, 1);
+        }
+        else {
+            console.log('not in cart, should add');
+            $scope.user.interestedTags.push(query);
+        }
+        $http.
+          put('/api/v1/save/cart', $scope.user).
+          success(function (data) {
+            console.log('add to cart successful?');
+            $scope.following = $scope.user.interestedTags.indexOf(query);
+        });
+    };
 };
 exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     console.log($routeParams.id);
@@ -12779,42 +12809,33 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     $http.get('/api/v1/asset/id/' + encoded).success(function (data) {
         console.log(data);
         $scope.asset = data.asset;
-        $scope.following = matchedIdFound({ asset: data.asset._id }, $scope.user.interestedAssets);
+        $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
     });
     $scope.addToCart = function (asset) {
-        if ($scope.following) {
+        if ($scope.following > -1) {
             console.log('already in cart, should remove');
+            $scope.user.interestedAssets.splice($scope.following, 1);
         }
         else {
             console.log('not in cart, should add');
-            $scope.user.interestedAssets.push(obj);
-            $http.
-          put('/api/v1/me/cart', $scope.user).
-          success(function (data) {
-                //need to load the user after a save?
-                /*$http.
-                get('/api/v1/me').
-                success(function (data) {
-                        s.user = data.user;
-                    }).
-                error(function (data, status) {
-                if (status === status.UNAUTHORIZED) {
-                    s.user = null;
-                }
-                });*/
-            console.log('add to cart successful?');
-            });
+            $scope.user.interestedAssets.push({ asset: $scope.asset._id });
         }
+        $http.
+          put('/api/v1/save/cart', $scope.user).
+          success(function (data) {
+            console.log('add to cart successful?');
+            $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
+        });
     };
     var matchedIdFound = function (obj, array) {
         for (var i = 0; i < array.length; i++) {
             console.log('1: ' + array[i].asset);
             console.log('2: ' + obj.asset);
             if (array[i].asset == obj.asset) {
-                return true;
+                return i;
             }
         }
-        return false;
+        return -1;
     }
 };
 
@@ -13050,35 +13071,39 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
 })
     .run(function ($rootScope, auth, store, jwtHelper, $location) {
     // This hooks al auth events to check everything as soon as the app starts
-        auth.hookEvents();
-        $rootScope.$on('$locationChangeStart', function () {
-            var token = store.get('token');
-            if (token) {
-                //first check if you can authenticate automatically
-                if (!jwtHelper.isTokenExpired(token)) {
-                    if (!auth.isAuthenticated) {
-                        console.log('auto authenticating');
-                        auth.authenticate(store.get('profile'), token);
-                    }
+    auth.hookEvents();
+    $rootScope.$on('$locationChangeStart', function () {
+        var token = store.get('token');
+        if (token) {
+            //first check if you can authenticate automatically
+            if (!jwtHelper.isTokenExpired(token)) {
+                if (!auth.isAuthenticated) {
+                    console.log('auto authenticating');
+                    auth.authenticate(store.get('profile'), token);
                 }
+            }
                 //if still not, redirect to authentication page
                 /*if (!auth.isAuthenticated) {
                     console.log('not authenticated');
                     event.preventDefault();
                     $location.path('#/about');
                 }*/
-                else {
-                    console.log('authenticated and logging in normal');
-                    // Either show the login page or use the refresh token to get a new idToken
-                    $location.path('/');
-                }
-        }
-            //auth0 uses access_token to know what page to redirect to after login
             else if (document.URL.indexOf('access_token') == -1) {
-                console.log('not authenticated: ' + document.URL);
-                event.preventDefault();
+                console.log('authenticated and logging in normal');
+                // Either show the login page or use the refresh token to get a new idToken
+                $location.path('/');
+            }
+            //token is expired and hasn't been recently logged in
+            else {
                 $location.path('/about');
             }
+        }
+            //auth0 uses access_token to know what page to redirect to after login
+        else if (document.URL.indexOf('access_token') == -1) {
+            console.log('not authenticated: ' + document.URL);
+            event.preventDefault();
+            $location.path('/about');
+        }
     });
 });
 

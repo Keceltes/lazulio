@@ -43,43 +43,25 @@ module.exports = function (wagner) {
         };
     }));
     /*User Cart API */
-    api.put('/me/cart', wagner.invoke(function (User) {
+    api.put('/save/cart', wagner.invoke(function (User) {
         return function (req, res) {
-            console.log('1');
-            try {
-                console.log('2');
-                var cart = req.body.interestedAssets;
-            } catch (e) {
-                console.log('error');
-                return res.
-          status(status.BAD_REQUEST).
-          json({ error: 'No cart specified!' });
-            }
-            console.log('3');
             console.log('req body: ' + JSON.stringify(req.body));
             User.update({ username: req.body.username },
             {
-                interestedAssets: cart
+                interestedAssets: req.body.interestedAssets,
+                interestedTags: req.body.interestedTags
             },
              { upsert: true },
-             function (err, numAffected) { 
+             function (err, numAffected) {
                 console.log('num affected: ' + JSON.stringify(numAffected));
-                console.log('err: ' + JSON.stringify(err));
+                console.log('any errors?: ' + JSON.stringify(err));
+                return res.json();
             }
             );
-            /*req.user.interestedAssets = cart; //req.user is done by the mean-retail example using Facebook login
-            req.user.save(function (error, user) {
-                if (error) {
-                    return res.
-            status(status.INTERNAL_SERVER_ERROR).
-            json({ error: error.toString() });
-                }
-                return res.json({ user: user });
-            });*/
         };
     }));
     
-    api.get('/me', function (req, res) {
+    /*api.get('/me', function (req, res) {
         if (!req.user) {
             return res.
         status(status.UNAUTHORIZED).
@@ -87,7 +69,7 @@ module.exports = function (wagner) {
         }
         
         req.user.populate({ path: 'data.interestedAssets', model: 'Asset' }, handleOne.bind(null, 'user', res));
-    });
+    });*/
     
     /* Category API */
     api.put('/category/delete/:id', wagner.invoke(function (Category) {
@@ -189,7 +171,7 @@ module.exports = function (wagner) {
             });
         };
     }));
-    api.get('/asset/byTag/:ids', wagner.invoke(function (Asset) {
+    api.get('/asset/byTag/and/:ids', wagner.invoke(function (Asset) {
         return function (req, res) {
             if (req.params.ids[0] != '0') {
                 console.log(req.params.ids);
@@ -198,6 +180,26 @@ module.exports = function (wagner) {
                 Asset.
         find({ tags: { $all: searchTags } }).//all values in array searchTags must match
         //find({ tags: {$in: searchTags} }). //at least 1 value in array searchTags must match
+        //sort(sort).
+        exec(handleMany.bind(null, 'assets', res));
+            }
+            else {
+                console.log('none');
+                Asset.
+        find().
+        exec(handleMany.bind(null, 'assets', res));
+            }
+        };
+    }));
+    api.get('/asset/byTag/or/:ids', wagner.invoke(function (Asset) {
+        return function (req, res) {
+            if (req.params.ids[0] != '0') {
+                console.log(req.params.ids);
+                var searchTags = req.params.ids.split('+');
+                //var sort = { _id: 1 };
+                Asset.
+        //find({ tags: { $all: searchTags } }).//all values in array searchTags must match
+        find({ tags: {$in: searchTags} }). //at least 1 value in array searchTags must match
         //sort(sort).
         exec(handleMany.bind(null, 'assets', res));
             }

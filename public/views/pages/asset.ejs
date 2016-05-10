@@ -2,10 +2,10 @@
     <h1>name: {{asset.name}}</h1>
   <!-- this will be repeated underneath each product -->
 <div class="cart-button" ng-click="addToCart(asset);">
-  <div ng-show="!following">
+  <div ng-show="(following == -1)">
     Follow
   </div>
-  <div ng-show="following">
+  <div ng-show="(following > -1)">
     Followed
   </div>
 </div>

@@ -1,12 +1,19 @@
 <div>
     <h1>asset results</h1>
-  <button>subscribe to this search</button>
+  <div class="cart-button" ng-click="addToCart();">
+    <div ng-show="(following == -1)">
+      Subscribe to this search
+    </div>
+    <div ng-show="(following > -1)">
+      Already subscribed
+    </div>
+  </div>
   current number of followers: ??<br/>
     <br/>
     <div ng-repeat="asset in assets">
         name: {{asset.name}} <a ng-href="#/asset/{{asset._id}}">open asset</a>
     </div>
-    </br>
-    </br>
-    </br>
+    <br/>
+    <br/>
+    <br/>
 </div>
