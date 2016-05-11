@@ -40,7 +40,11 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
     when('/asset/new', {
         template: '<save-asset></save-asset>'
     }).
-    when('/asset/results/byTag/:tags', {
+    when('/asset/results/byTag/and/:tags', {
+        template: '<asset-results></asset-results>'
+    }).
+    //OR not currently used
+    when('/asset/results/byTag/or/:tags', {
         template: '<asset-results></asset-results>'
     }).
     when('/asset/results/byText/:text', {
@@ -108,6 +112,9 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
                     console.log('auto authenticating');
                     auth.authenticate(store.get('profile'), token);
                 }
+                else {
+                    console.log('token not expired and is authenticated');
+                }
             }
                 //if still not, redirect to authentication page
                 /*if (!auth.isAuthenticated) {
@@ -115,14 +122,16 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
                     event.preventDefault();
                     $location.path('#/about');
                 }*/
+            //token is expired and not via access_token
             else if (document.URL.indexOf('access_token') == -1) {
-                console.log('authenticated and logging in normal');
+                console.log('token is expired and not via access_token');
+                $location.path('/about');
+            }
+            //token is expired but just logged in
+            else {
+                console.log('token is expired but just logged in');
                 // Either show the login page or use the refresh token to get a new idToken
                 $location.path('/');
-            }
-            //token is expired and hasn't been recently logged in
-            else {
-                $location.path('/about');
             }
         }
             //auth0 uses access_token to know what page to redirect to after login

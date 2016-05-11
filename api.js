@@ -21,7 +21,8 @@ module.exports = function (wagner) {
         return function (req, res) {
             console.log('user id - ' + req.params.id);
             User.
-        findOne({username: req.params.id}).
+        findOne({ username: req.params.id }).
+        populate({ path: 'interestedAssets.asset', model: 'Asset'}).
       exec(handleOne.bind(null, 'user', res));
         };
     }));

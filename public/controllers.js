@@ -7,13 +7,14 @@ exports.HomePageController = function ($http, $scope, auth) {
 }
 
 exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
-    $scope.auth = auth;
+    $scope.auth = auth; //for html side auth
     if (auth.profile != undefined) {
         $http.
         get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
             //if success
             console.log('user found: ' + data.data.user.username);
             $scope.user = data.data.user; //when success, only need 1 data, not sure why then requires 2, but at least the success / failure is fine
+            console.log(JSON.stringify($scope.user.interestedAssets));
         }, function (data) {
             //if failure
             console.log('user not found, creating now');
@@ -68,7 +69,7 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
                 }).join("+");
             }
             $scope.savedSearchCategories = selectedItem.slice();
-            $scope.changeRoute('#/asset/results/byTag/' + tagString);
+            $scope.changeRoute('#/asset/results/byTag/and/' + tagString);
         }, function () {
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -258,9 +259,9 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     };
     var matchedIdFound = function (obj, array) {
         for (var i = 0; i < array.length; i++) {
-            console.log('1: ' + array[i].asset);
+            console.log('1: ' + array[i].asset._id);
             console.log('2: ' + obj.asset);
-            if (array[i].asset == obj.asset) {
+            if (array[i].asset._id == obj.asset) {
                 return i;
             }
         }
@@ -297,4 +298,7 @@ exports.FollowedAssetFeedController = function ($scope, $http) {
 
 };
 exports.MyAccountController = function ($scope, $http, auth) {
+    $scope.print = function (asset) {
+        console.log(JSON.stringify(asset));
+    };
 };

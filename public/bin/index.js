@@ -12585,6 +12585,7 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
             //if success
             console.log('user found: ' + data.data.user.username);
             $scope.user = data.data.user; //when success, only need 1 data, not sure why then requires 2, but at least the success / failure is fine
+            console.log(JSON.stringify($scope.user.interestedAssets));
         }, function (data) {
             //if failure
             console.log('user not found, creating now');
@@ -12604,8 +12605,8 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
     $scope.changeRoute = function (url, forceReload) {
         $scope = $scope || angular.element(document).scope();
         if (forceReload || $scope.$$phase) { // that's right TWO dollar signs: $$phase
-            //total hack: i don't wike it
-            $timeout(function () { window.location = url; }, 500);
+            //total hack, won't work for slow computers, i don't wike it
+            $timeout(function () { window.location = url; }, 200);
             //window.location = url;
         } else {
             $location.path(url);
@@ -12639,7 +12640,7 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
                 }).join("+");
             }
             $scope.savedSearchCategories = selectedItem.slice();
-            $scope.changeRoute('#/asset/results/byTag/' + tagString);
+            $scope.changeRoute('#/asset/results/byTag/and/' + tagString);
         }, function () {
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -12829,9 +12830,9 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     };
     var matchedIdFound = function (obj, array) {
         for (var i = 0; i < array.length; i++) {
-            console.log('1: ' + array[i].asset);
+            console.log('1: ' + array[i].asset._id);
             console.log('2: ' + obj.asset);
-            if (array[i].asset == obj.asset) {
+            if (array[i].asset._id == obj.asset) {
                 return i;
             }
         }
@@ -12868,6 +12869,9 @@ exports.FollowedAssetFeedController = function ($scope, $http) {
 
 };
 exports.MyAccountController = function ($scope, $http, auth) {
+    $scope.print = function (asset) {
+        console.log(JSON.stringify(asset));
+    };
 };
 },{}],8:[function(require,module,exports){
 //direct to specific html pages
@@ -13013,7 +13017,11 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
     when('/asset/new', {
         template: '<save-asset></save-asset>'
     }).
-    when('/asset/results/byTag/:tags', {
+    when('/asset/results/byTag/and/:tags', {
+        template: '<asset-results></asset-results>'
+    }).
+    //OR not currently used
+    when('/asset/results/byTag/or/:tags', {
         template: '<asset-results></asset-results>'
     }).
     when('/asset/results/byText/:text', {
@@ -13081,6 +13089,9 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
                     console.log('auto authenticating');
                     auth.authenticate(store.get('profile'), token);
                 }
+                else {
+                    console.log('token not expired and is authenticated');
+                }
             }
                 //if still not, redirect to authentication page
                 /*if (!auth.isAuthenticated) {
@@ -13088,14 +13099,16 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
                     event.preventDefault();
                     $location.path('#/about');
                 }*/
+            //token is expired and not via access_token
             else if (document.URL.indexOf('access_token') == -1) {
-                console.log('authenticated and logging in normal');
+                console.log('token is expired and not via access_token');
+                $location.path('/about');
+            }
+            //token is expired but just logged in
+            else {
+                console.log('token is expired but just logged in');
                 // Either show the login page or use the refresh token to get a new idToken
                 $location.path('/');
-            }
-            //token is expired and hasn't been recently logged in
-            else {
-                $location.path('/about');
             }
         }
             //auth0 uses access_token to know what page to redirect to after login
