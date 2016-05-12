@@ -253,15 +253,15 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
         $http.
           put('/api/v1/save/cart', $scope.user).
           success(function (data) {
-            console.log('add to cart successful?');
+            console.log('add to cart successful!');
             $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
         });
     };
     var matchedIdFound = function (obj, array) {
         for (var i = 0; i < array.length; i++) {
-            console.log('1: ' + array[i].asset._id);
+            console.log('1: ' + array[i].asset/*._id*/);
             console.log('2: ' + obj.asset);
-            if (array[i].asset._id == obj.asset) {
+            if (array[i].asset/*._id*/ == obj.asset) {
                 return i;
             }
         }
@@ -298,6 +298,21 @@ exports.FollowedAssetFeedController = function ($scope, $http) {
 
 };
 exports.MyAccountController = function ($scope, $http, auth) {
+    if ($scope.auth.profile != undefined) {
+        $http.
+        get('/api/v1/userfull/' + $scope.auth.profile.user_id).then(function (data) {
+            //if success
+            console.log('user found: ' + data.data.user.username);
+            $scope.userfull = data.data.user; //when success, only need 1 data, not sure why then requires 2, but at least the success / failure is fine
+            console.log(JSON.stringify($scope.user.interestedAssets));
+        }, function (data) {
+            //if failure
+            console.log('user not found, should not create');
+        });
+    }
+    else {
+        console.log('auth profile undefined');
+    }
     $scope.print = function (asset) {
         console.log(JSON.stringify(asset));
     };

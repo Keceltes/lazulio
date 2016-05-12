@@ -1,11 +1,11 @@
 ﻿<div>
   <span>User name is {{auth.profile.nickname}}</span><br/>
   <h2>my saved searches</h2><br/>
-  <div ng-repeat="search in user.interestedTags">
+  <div ng-repeat="search in userfull.interestedTags">
     search: {{search}} <a ng-href="#/asset/results/{{search}}">open search results</a>
   </div>
   <h2>my followed assets</h2><br/>
-  <div ng-repeat="asset in user.interestedAssets">
+  <div ng-repeat="asset in userfull.interestedAssets">
     name: {{asset.asset.name}} <a ng-href="#/asset/{{asset.asset._id}}">open asset</a>
   </div>
 </div>
