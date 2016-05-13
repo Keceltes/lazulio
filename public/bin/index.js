@@ -12578,28 +12578,7 @@ exports.HomePageController = function ($http, $scope, auth) {
 }
 
 exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
-    $scope.auth = auth; //for html side auth
-    if (auth.profile != undefined) {
-        $http.
-        get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
-            //if success
-            console.log('user found: ' + data.data.user.username);
-            $scope.user = data.data.user; //when success, only need 1 data, not sure why then requires 2, but at least the success / failure is fine
-            console.log(JSON.stringify($scope.user.interestedAssets));
-        }, function (data) {
-            //if failure
-            console.log('user not found, creating now');
-            $http.put('/api/v1/user/save', auth).success(function (data) {
-                //save doesn't return the data yet, need to edit API
-                console.log('new user saved: ' + data.user.username);
-                $scope.user = data.user;
-            });
-        });
-    }
-    else {
-        console.log('auth profile undefined');
-    }
-    
+    //NavBarController only gets called once when app loaded for first time
     $scope.savedSearchCategories = [];
     //if a function like this exists, it would be great in the NavBar
     $scope.changeRoute = function (url, forceReload) {
@@ -12783,7 +12762,12 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
         get('/api/v1/asset/' + query).
         success(function (data) {
         $scope.assets = data.assets;
-        $scope.following = $scope.user.interestedTags.indexOf(query);
+        if ($scope.user == undefined) {
+            $scope.following = false;
+        }
+        else {
+            $scope.following = $scope.user.interestedTags.indexOf(query);
+        }
         console.log('search found? ' + $scope.user.interestedTags.indexOf(query));
     });
     $scope.addToCart = function () {
@@ -12810,7 +12794,12 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     $http.get('/api/v1/asset/id/' + encoded).success(function (data) {
         console.log(data);
         $scope.asset = data.asset;
-        $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
+        if ($scope.user == undefined) {
+            $scope.following = false;
+        }
+        else {
+            $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
+        }
     });
     $scope.addToCart = function (asset) {
         if ($scope.following > -1) {
@@ -12832,7 +12821,7 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
         for (var i = 0; i < array.length; i++) {
             console.log('1: ' + array[i].asset/*._id*/);
             console.log('2: ' + obj.asset);
-            if (array[i].asset/*._id*/ == obj.asset) {
+            if (array[i].asset /*._id*/ == obj.asset) {
                 return i;
             }
         }
@@ -12878,7 +12867,7 @@ exports.MyAccountController = function ($scope, $http, auth) {
             console.log(JSON.stringify($scope.user.interestedAssets));
         }, function (data) {
             //if failure
-            console.log('user not found, should not create');
+            console.log('user not found, but should not create here');
         });
     }
     else {
@@ -13070,13 +13059,15 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
     });
     
     //app.js, not sure if this belongs here in particular though
-    authProvider.on('loginSuccess', function ($location, profilePromise, idToken, store) {
+    authProvider.on('loginSuccess', function ($rootScope, auth, $http, $location, profilePromise, idToken, store) {
         console.log("Login Success");
         profilePromise.then(function (profile) {
             store.set('profile', profile);
             store.set('token', idToken);
         });
-        $location.path('/');
+        //LoginCheck($rootScope, auth, $http, function () { //login check doesn't work here because, despite saying Login Success, auth is not defined
+            $location.path('/');
+        //});
     });
     
     authProvider.on('loginFailure', function () {
@@ -13092,22 +13083,26 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
     
     $httpProvider.interceptors.push('jwtInterceptor');
 })
-    .run(function ($rootScope, auth, store, jwtHelper, $location) {
+    .run(function ($rootScope, auth, store, jwtHelper, $location, $http) {
     // This hooks al auth events to check everything as soon as the app starts
     auth.hookEvents();
     $rootScope.$on('$locationChangeStart', function () {
-        var token = store.get('token');
-        if (token) {
-            //first check if you can authenticate automatically
-            if (!jwtHelper.isTokenExpired(token)) {
-                if (!auth.isAuthenticated) {
-                    console.log('auto authenticating');
-                    auth.authenticate(store.get('profile'), token);
+        $rootScope.auth = auth;  //hope it doesn't matter that this is called unnecessarily, needed for about.ejs in particular regardless of signed in or not
+        //LoginCheck($rootScope, auth, $http, function () {
+            var token = store.get('token');
+            if (token) {
+                console.log('token found');
+                //first check if you can authenticate automatically
+                if (!jwtHelper.isTokenExpired(token)) {
+                    console.log('token not expired');
+                    if (!auth.isAuthenticated) {
+                        console.log('auto authenticating');
+                        auth.authenticate(store.get('profile'), token);
+                    }
+                    else {
+                        console.log('token not expired and is authenticated');
+                    }
                 }
-                else {
-                    console.log('token not expired and is authenticated');
-                }
-            }
                 //if still not, redirect to authentication page
                 /*if (!auth.isAuthenticated) {
                     console.log('not authenticated');
@@ -13115,26 +13110,61 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
                     $location.path('#/about');
                 }*/
             //token is expired and not via access_token
+                else if (document.URL.indexOf('access_token') == -1) {
+                    console.log('token is expired and not via access_token');
+                    event.preventDefault();
+                    $location.path('/about');
+                }
+            //token is expired but just logged in
+                else {
+                    console.log('token is expired but not new user, just logged in');
+                }
+            }
+            //auth0 uses access_token to know what page to redirect to after login
             else if (document.URL.indexOf('access_token') == -1) {
-                console.log('token is expired and not via access_token');
+                console.log('not authenticated and non existant token: ' + document.URL);
+                event.preventDefault();
                 $location.path('/about');
             }
-            //token is expired but just logged in
             else {
-                console.log('token is expired but just logged in');
-                // Either show the login page or use the refresh token to get a new idToken
-                $location.path('/');
+                console.log('token was non existant, just logged in #2');
             }
-        }
-            //auth0 uses access_token to know what page to redirect to after login
-        else if (document.URL.indexOf('access_token') == -1) {
-            console.log('not authenticated: ' + document.URL);
-            event.preventDefault();
-            $location.path('/about');
-        }
+        //});
+        LoginCheck($rootScope, auth, $http, function () { });
     });
 });
 
+function LoginCheck($rootScope, auth, $http, callback) {
+    if (auth.profile != undefined) {
+        console.log('LoginCheck: auth profile defined');
+        if ($rootScope.user == undefined) {
+            console.log('associating rootScope.user');
+            $http.
+                    get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
+                //if success
+                console.log('user found: ' + data.data.user.username);
+                $rootScope.user = data.data.user; //when success, only need 1 data, not sure why then requires 2, but at least the success / failure is fine
+                console.log(JSON.stringify($rootScope.user.interestedAssets));
+                callback();
+            }, function (data) {
+                //if failure
+                console.log('user not found, creating now');
+                $http.put('/api/v1/user/save', auth).success(function (data) {
+                    console.log('new user saved: ' + data.user.username);
+                    $rootScope.user = data.user;
+                    callback();
+                });
+            });
+        }
+        else {
+            callback();
+        }
+    }
+    else {
+        console.log('LoginCheck: auth profile undefined');
+        callback();
+    }
+}
 },{"./controllers":7,"./directives":8,"./services":10,"angular-animate":2,"angular-ui-bootstrap":4,"underscore":6}],10:[function(require,module,exports){
 //interesting that this is not in the controller.js, the 8th called to REST API
 var status = require('http-status');

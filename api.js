@@ -37,18 +37,18 @@ module.exports = function (wagner) {
     }));
     api.put('/user/save', wagner.invoke(function (User) {
         return function (req, res) {
-            console.log('saving new user - ' + req.params.id);
+            console.log('saving new user - ' + req.body.profile.user_id);
             var user = new User({
                 username: req.body.profile.user_id
             });
-            user.save(function (error, category) {
+            user.save(function (error, user) {
                 if (error) {
                     console.log(error.toString());
                     return res.
-          status(status.INTERNAL_SERVER_ERROR).
-          json({ error: error.toString() });
+                      status(status.INTERNAL_SERVER_ERROR).
+                      json({ error: error.toString() });
                 }
-                return res.json({ category: category });
+                return res.json({ user: user });
             });
         };
     }));

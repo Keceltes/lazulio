@@ -7,28 +7,7 @@ exports.HomePageController = function ($http, $scope, auth) {
 }
 
 exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
-    $scope.auth = auth; //for html side auth
-    if (auth.profile != undefined) {
-        $http.
-        get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
-            //if success
-            console.log('user found: ' + data.data.user.username);
-            $scope.user = data.data.user; //when success, only need 1 data, not sure why then requires 2, but at least the success / failure is fine
-            console.log(JSON.stringify($scope.user.interestedAssets));
-        }, function (data) {
-            //if failure
-            console.log('user not found, creating now');
-            $http.put('/api/v1/user/save', auth).success(function (data) {
-                //save doesn't return the data yet, need to edit API
-                console.log('new user saved: ' + data.user.username);
-                $scope.user = data.user;
-            });
-        });
-    }
-    else {
-        console.log('auth profile undefined');
-    }
-    
+    //NavBarController only gets called once when app loaded for first time
     $scope.savedSearchCategories = [];
     //if a function like this exists, it would be great in the NavBar
     $scope.changeRoute = function (url, forceReload) {
@@ -212,7 +191,12 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
         get('/api/v1/asset/' + query).
         success(function (data) {
         $scope.assets = data.assets;
-        $scope.following = $scope.user.interestedTags.indexOf(query);
+        if ($scope.user == undefined) {
+            $scope.following = -1;
+        }
+        else {
+            $scope.following = $scope.user.interestedTags.indexOf(query);
+        }
         console.log('search found? ' + $scope.user.interestedTags.indexOf(query));
     });
     $scope.addToCart = function () {
@@ -239,7 +223,12 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     $http.get('/api/v1/asset/id/' + encoded).success(function (data) {
         console.log(data);
         $scope.asset = data.asset;
-        $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
+        if ($scope.user == undefined) {
+            $scope.following = -1;
+        }
+        else {
+            $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
+        }
     });
     $scope.addToCart = function (asset) {
         if ($scope.following > -1) {
@@ -261,7 +250,7 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
         for (var i = 0; i < array.length; i++) {
             console.log('1: ' + array[i].asset/*._id*/);
             console.log('2: ' + obj.asset);
-            if (array[i].asset/*._id*/ == obj.asset) {
+            if (array[i].asset /*._id*/ == obj.asset) {
                 return i;
             }
         }
@@ -307,7 +296,7 @@ exports.MyAccountController = function ($scope, $http, auth) {
             console.log(JSON.stringify($scope.user.interestedAssets));
         }, function (data) {
             //if failure
-            console.log('user not found, should not create');
+            console.log('user not found, but should not create here');
         });
     }
     else {

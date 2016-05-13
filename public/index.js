@@ -78,13 +78,15 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
     });
     
     //app.js, not sure if this belongs here in particular though
-    authProvider.on('loginSuccess', function ($location, profilePromise, idToken, store) {
+    authProvider.on('loginSuccess', function ($rootScope, auth, $http, $location, profilePromise, idToken, store) {
         console.log("Login Success");
         profilePromise.then(function (profile) {
             store.set('profile', profile);
             store.set('token', idToken);
         });
-        $location.path('/');
+        //LoginCheck($rootScope, auth, $http, function () { //login check doesn't work here because, despite saying Login Success, auth is not defined
+            $location.path('/');
+        //});
     });
     
     authProvider.on('loginFailure', function () {
@@ -100,22 +102,26 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
     
     $httpProvider.interceptors.push('jwtInterceptor');
 })
-    .run(function ($rootScope, auth, store, jwtHelper, $location) {
+    .run(function ($rootScope, auth, store, jwtHelper, $location, $http) {
     // This hooks al auth events to check everything as soon as the app starts
     auth.hookEvents();
     $rootScope.$on('$locationChangeStart', function () {
-        var token = store.get('token');
-        if (token) {
-            //first check if you can authenticate automatically
-            if (!jwtHelper.isTokenExpired(token)) {
-                if (!auth.isAuthenticated) {
-                    console.log('auto authenticating');
-                    auth.authenticate(store.get('profile'), token);
+        $rootScope.auth = auth;  //hope it doesn't matter that this is called unnecessarily, needed for about.ejs in particular regardless of signed in or not
+        //LoginCheck($rootScope, auth, $http, function () {
+            var token = store.get('token');
+            if (token) {
+                console.log('token found');
+                //first check if you can authenticate automatically
+                if (!jwtHelper.isTokenExpired(token)) {
+                    console.log('token not expired');
+                    if (!auth.isAuthenticated) {
+                        console.log('auto authenticating');
+                        auth.authenticate(store.get('profile'), token);
+                    }
+                    else {
+                        console.log('token not expired and is authenticated');
+                    }
                 }
-                else {
-                    console.log('token not expired and is authenticated');
-                }
-            }
                 //if still not, redirect to authentication page
                 /*if (!auth.isAuthenticated) {
                     console.log('not authenticated');
@@ -123,22 +129,58 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
                     $location.path('#/about');
                 }*/
             //token is expired and not via access_token
+                else if (document.URL.indexOf('access_token') == -1) {
+                    console.log('token is expired and not via access_token');
+                    event.preventDefault();
+                    $location.path('/about');
+                }
+            //token is expired but just logged in
+                else {
+                    console.log('token is expired but not new user, just logged in');
+                }
+            }
+            //auth0 uses access_token to know what page to redirect to after login
             else if (document.URL.indexOf('access_token') == -1) {
-                console.log('token is expired and not via access_token');
+                console.log('not authenticated and non existant token: ' + document.URL);
+                event.preventDefault();
                 $location.path('/about');
             }
-            //token is expired but just logged in
             else {
-                console.log('token is expired but just logged in');
-                // Either show the login page or use the refresh token to get a new idToken
-                $location.path('/');
+                console.log('token was non existant, just logged in #2');
             }
-        }
-            //auth0 uses access_token to know what page to redirect to after login
-        else if (document.URL.indexOf('access_token') == -1) {
-            console.log('not authenticated: ' + document.URL);
-            event.preventDefault();
-            $location.path('/about');
-        }
+        //});
+        LoginCheck($rootScope, auth, $http, function () { });
     });
 });
+
+function LoginCheck($rootScope, auth, $http, callback) {
+    if (auth.profile != undefined) {
+        console.log('LoginCheck: auth profile defined');
+        if ($rootScope.user == undefined) {
+            console.log('associating rootScope.user');
+            $http.
+                    get('/api/v1/user/' + auth.profile.user_id).then(function (data) {
+                //if success
+                console.log('user found: ' + data.data.user.username);
+                $rootScope.user = data.data.user; //when success, only need 1 data, not sure why then requires 2, but at least the success / failure is fine
+                console.log(JSON.stringify($rootScope.user.interestedAssets));
+                callback();
+            }, function (data) {
+                //if failure
+                console.log('user not found, creating now');
+                $http.put('/api/v1/user/save', auth).success(function (data) {
+                    console.log('new user saved: ' + data.user.username);
+                    $rootScope.user = data.user;
+                    callback();
+                });
+            });
+        }
+        else {
+            callback();
+        }
+    }
+    else {
+        console.log('LoginCheck: auth profile undefined');
+        callback();
+    }
+}
