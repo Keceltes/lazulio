@@ -12763,7 +12763,7 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
         success(function (data) {
         $scope.assets = data.assets;
         if ($scope.user == undefined) {
-            $scope.following = false;
+            $scope.following = -1;
         }
         else {
             $scope.following = $scope.user.interestedTags.indexOf(query);
@@ -12795,7 +12795,7 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
         console.log(data);
         $scope.asset = data.asset;
         if ($scope.user == undefined) {
-            $scope.following = false;
+            $scope.following = -1;
         }
         else {
             $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
@@ -12855,7 +12855,9 @@ exports.FollowedSearchFeedController = function ($scope, $http) {
     });
 };
 exports.FollowedAssetFeedController = function ($scope, $http) {
-
+    $http.get('/api/v1/asset/updated').success(function (data) {
+        $scope.updatedAssets = data.assets;
+    });
 };
 exports.MyAccountController = function ($scope, $http, auth) {
     if ($scope.auth.profile != undefined) {

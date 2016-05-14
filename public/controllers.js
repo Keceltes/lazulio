@@ -284,7 +284,9 @@ exports.FollowedSearchFeedController = function ($scope, $http) {
     });
 };
 exports.FollowedAssetFeedController = function ($scope, $http) {
-
+    $http.get('/api/v1/asset/updated').success(function (data) {
+        $scope.updatedAssets = data.assets;
+    });
 };
 exports.MyAccountController = function ($scope, $http, auth) {
     if ($scope.auth.profile != undefined) {

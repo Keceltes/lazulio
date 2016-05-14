@@ -151,11 +151,8 @@ module.exports = function (wagner) {
     api.put('/asset/save', wagner.invoke(function (Asset) {
         return function (req, res) {
             console.log('server side asset save called');
-            console.log(JSON.stringify(req.body));
-            console.log(req.body.tags.split(','));
-            var asset = new Asset({
-                //_id: req.body._id,
-                name: req.body.name,
+            Asset.update({ name: req.body.name },
+            {
                 description: req.body.description,
                 organization: req.body.organization,
                 market: req.body.market,
@@ -167,17 +164,14 @@ module.exports = function (wagner) {
                 lookingFor: req.body.lookingFor,
                 contact: req.body.contact,
                 pictures: req.body.pictures,
-                tags: req.body.tags.split(',')
-            });
-            console.log(asset);
-            asset.save(function (error, asset) {
-                if (error) {
-                    console.log(error.toString());
-                    return res.
-          status(status.INTERNAL_SERVER_ERROR).
-          json({ error: error.toString() });
-                }
-                return res.json({ asset: asset });
+                tags: (req.body.tags == undefined) ? undefined : req.body.tags.split(','),
+                updatedAt: Date()
+            },
+             { upsert: true },
+             function (err, numAffected) {
+                console.log('num affected: ' + JSON.stringify(numAffected));
+                console.log('any errors?: ' + JSON.stringify(err));
+                return res.json();
             });
         };
     }));
@@ -234,7 +228,16 @@ module.exports = function (wagner) {
         return function (req, res) {
             Asset.
         find().
-        sort({ viewCount: 1 }).
+        sort({ _id: -1 }). //interesting!  ID is the timestamp ...
+        limit(5).
+        exec(handleMany.bind(null, 'assets', res));
+        };
+    }));
+    api.get('/asset/updated', wagner.invoke(function (Asset) {
+        return function (req, res) {
+            Asset.
+        find().
+        sort({ updatedAt: -1 }).//interesting!  ID is the timestamp ...
         limit(5).
         exec(handleMany.bind(null, 'assets', res));
         };
