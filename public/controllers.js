@@ -221,7 +221,7 @@ exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     var encoded = encodeURIComponent($routeParams.id);
     console.log('asset  controller properly registered');
     $http.get('/api/v1/asset/id/' + encoded).success(function (data) {
-        console.log(data);
+        console.log('returned: ' + data);
         $scope.asset = data.asset;
         if ($scope.user == undefined) {
             $scope.following = -1;

@@ -254,10 +254,15 @@ module.exports = function (wagner) {
     }));
     api.get('/asset/id/:id', wagner.invoke(function (Asset) {
         return function (req, res) {
-            Asset.
-      findOne({ _id: req.params.id }).
-      //sort(sort).
-      exec(handleOne.bind(null, 'asset', res));
+            console.log('searching by id, increasing view count: ' + req.params.id);
+            Asset.findByIdAndUpdate(req.params.id, 
+                { $inc: { viewCount: 1 } },
+            { new: true },
+            function (err, asset) {
+                console.log('obj: ' + JSON.stringify(asset));
+                console.log('any errors?: ' + JSON.stringify(err));
+                return res.json({ asset: asset});
+            });
         };
     }));
     return api;

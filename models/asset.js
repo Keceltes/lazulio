@@ -16,8 +16,8 @@ var schema = new mongoose.Schema({
     // Pictures must start with "http://"
     pictures: [{type: String, match: /^http:\/\//i}],
     tags: [{ type: String }],
-    viewCount: { type: Number },
-    //createdAt    : { type: Date, default: Date() }, //uses _id now
+    viewCount: { type: Number, default: 0 },
+    //createdAt    : { type: Date, default: Date.now }, //uses _id now
     updatedAt    : { type: Date }
 });
 
