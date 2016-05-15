@@ -12752,7 +12752,7 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
     var query;
     //need to fill $scope.assets
     if ($routeParams.tags != undefined) {
-        var encoded = encodeURIComponent($routeParams.tags);
+        var encoded = /*encodeURIComponent(*/ $routeParams.tags;//);
         query = 'byTag/and/' + encoded;
     }
     else if ($routeParams.text != undefined) {
@@ -12766,33 +12766,53 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
             $scope.following = -1;
         }
         else {
-            $scope.following = $scope.user.interestedTags.indexOf(query);
+            $scope.following = $scope.user.interestedSearches.indexOf(query);
         }
-        console.log('search found? ' + $scope.user.interestedTags.indexOf(query));
+        console.log('search found? ' + $scope.user.interestedSearches.indexOf(query));
     });
     $scope.addToCart = function () {
         if ($scope.following > -1) {
             console.log('already in cart, should remove');
-            $scope.user.interestedTags.splice($scope.following, 1);
+            $scope.user.interestedSearches.splice($scope.following, 1);
+            //search all searches to see if need to remove
+            $scope.user.interestedTags = RefreshInterestedTags($scope.user.interestedSearches);
         }
         else {
             console.log('not in cart, should add');
-            $scope.user.interestedTags.push(query);
+            $scope.user.interestedSearches.push(query);
+            //search all tags to see if need to add
+            $scope.user.interestedTags = RefreshInterestedTags($scope.user.interestedSearches);
         }
         $http.
           put('/api/v1/save/cart', $scope.user).
           success(function (data) {
             console.log('add to cart successful?');
-            $scope.following = $scope.user.interestedTags.indexOf(query);
+            $scope.following = $scope.user.interestedSearches.indexOf(query);
         });
     };
 };
+function RefreshInterestedTags(interestedSearches) {
+    var interestedTags = [];
+    for (var i = 0; i < interestedSearches.length; i++) {
+        var tags = interestedSearches[i].split('/')[interestedSearches[i].split('/').length - 1];
+        console.log('tags: ' + tags);
+        var tagArray = tags.split('+');
+        for (var j = 0; j < tagArray.length; j++) {
+            if (interestedTags.indexOf(tagArray[j]) == -1) {
+                interestedTags.push(tagArray[j]);
+            }
+        }
+    }
+    console.log('interested tags: ' + interestedTags);
+    return interestedTags;
+}
+
 exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
     console.log($routeParams.id);
     var encoded = encodeURIComponent($routeParams.id);
     console.log('asset  controller properly registered');
     $http.get('/api/v1/asset/id/' + encoded).success(function (data) {
-        console.log(data);
+        console.log('returned: ' + data);
         $scope.asset = data.asset;
         if ($scope.user == undefined) {
             $scope.following = -1;
@@ -12850,12 +12870,12 @@ exports.PopularFeedController = function ($scope, $http) {
     });
 };
 exports.FollowedSearchFeedController = function ($scope, $http) {
-    $http.get('/api/v1/asset/followed').success(function (data) {
+    $http.put('/api/v1/asset/followed', $scope.user).success(function (data) {
         $scope.feedAssets = data.assets;
     });
 };
 exports.FollowedAssetFeedController = function ($scope, $http) {
-    $http.get('/api/v1/asset/updated').success(function (data) {
+    $http.put('/api/v1/asset/updated', $scope.user).success(function (data) {
         $scope.updatedAssets = data.assets;
     });
 };

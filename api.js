@@ -59,6 +59,7 @@ module.exports = function (wagner) {
             User.update({ username: req.body.username },
             {
                 interestedAssets: req.body.interestedAssets,
+                interestedSearches: req.body.interestedSearches,
                 interestedTags: req.body.interestedTags
             },
              { upsert: true },
@@ -224,23 +225,28 @@ module.exports = function (wagner) {
         exec(handleMany.bind(null, 'assets', res));
         };
     }));
-    api.get('/asset/followed', wagner.invoke(function (Asset) {
+    api.put('/asset/followed', wagner.invoke(function (Asset) {
         return function (req, res) {
             Asset.
-        find().
-        sort({ _id: -1 }). //interesting!  ID is the timestamp ...
-        limit(5).
-        exec(handleMany.bind(null, 'assets', res));
-        };
+                find({ tags: { $in: req.body.interestedTags } }).
+                sort({ _id: -1 }). 
+                limit(5).
+                exec(handleMany.bind(null, 'assets', res));
+                };
     }));
-    api.get('/asset/updated', wagner.invoke(function (Asset) {
+    api.put('/asset/updated', wagner.invoke(function (Asset) {
         return function (req, res) {
+            var assetIds = [];
+            for (var i = 0; i < req.body.interestedAssets.length; i++) {
+                assetIds.push(req.body.interestedAssets[i].asset);
+            }
+            console.log(assetIds);
             Asset.
-        find().
-        sort({ updatedAt: -1 }).//interesting!  ID is the timestamp ...
-        limit(5).
-        exec(handleMany.bind(null, 'assets', res));
-        };
+                find({ _id: { $in: assetIds } }).
+                sort({ updatedAt: -1 }).//interesting!  ID is the timestamp ...
+                limit(5).
+                exec(handleMany.bind(null, 'assets', res));
+                };
     }));
     api.get('/asset/byText/:text', wagner.invoke(function (Asset) {
         return function (req, res) {
