@@ -22,6 +22,7 @@
     "gulp-browserify": "0.5.1",
     "http-status": "0.1.8",
     "mongoose": "4.0.3",
+	"nodemailer": "latest",
     "underscore": "1.5.2",
     "wagner-core": "0.1.0"
   },
