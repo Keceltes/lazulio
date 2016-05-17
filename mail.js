@@ -30,12 +30,29 @@ models.User.find({}, function (error, docs) {
                 exec(function (err, assets) {
                 //console.log(assets);
                 text = text + '<h1>New tech in tags you follow</h1>';
-                text = text + JSON.stringify(assets) + '<br/>';
+                for (j = 0; j < assets.length; j++) {
+                    var asset = assets[j];
+                    text = text + '<h2>name: ' + asset.name + '</h2>';
+                    text = text + 'current number of followers: ??<br/>';
+                    text = text + 'view count: '+ asset.viewCount +'<br/>';
+                    text = text + 'description: '+ asset.description +'<br/>';
+                    text = text + 'organization: '+ asset.organization +'<br/>';
+                    text = text + 'market: '+ asset.market +'<br/>';
+                    text = text + 'IP status: '+ asset.ipStatus +'<br/>';
+                    text = text + 'problem: '+ asset.problem +'<br/>';
+                    text = text + 'solution: '+ asset.solution +'<br/>';
+                    text = text + 'application: '+asset.application+'<br/>';
+                    text = text + 'advantages: '+asset.advantages+'<br/>';
+                    text = text + 'looking for: '+asset.lookingFor+'<br/>';
+                    text = text + 'contact: '+asset.contact+'<br/>';
+                    text = text + 'tags: '+asset.tags+'<br/>';
+                }
+
                 
                 //figure out assets updated today
                 var assetIds = [];
-                for (var i = 0; i < docs[i].interestedAssets.length; i++) {
-                    assetIds.push(docs[i].interestedAssets[i].asset);
+                for (var k = 0; k < docs[k].interestedAssets.length; k++) {
+                    assetIds.push(docs[k].interestedAssets[k].asset);
                 }
                 models.Asset.
                     find({
@@ -46,7 +63,23 @@ models.User.find({}, function (error, docs) {
                     exec(function (err, assets) {
                     //console.log(assets);
                     text = text + '<h1>Updated assets for assets you follow</h1>';
-                    text = text + JSON.stringify(assets) + '<br/>';
+                    for (l = 0; l < assets.length; l++) {
+                        var asset = assets[l];
+                        text = text + '<h2>name: ' + asset.name + '</h2>';
+                        text = text + 'current number of followers: ??<br/>';
+                        text = text + 'view count: ' + asset.viewCount + '<br/>';
+                        text = text + 'description: ' + asset.description + '<br/>';
+                        text = text + 'organization: ' + asset.organization + '<br/>';
+                        text = text + 'market: ' + asset.market + '<br/>';
+                        text = text + 'IP status: ' + asset.ipStatus + '<br/>';
+                        text = text + 'problem: ' + asset.problem + '<br/>';
+                        text = text + 'solution: ' + asset.solution + '<br/>';
+                        text = text + 'application: ' + asset.application + '<br/>';
+                        text = text + 'advantages: ' + asset.advantages + '<br/>';
+                        text = text + 'looking for: ' + asset.lookingFor + '<br/>';
+                        text = text + 'contact: ' + asset.contact + '<br/>';
+                        text = text + 'tags: ' + asset.tags + '<br/>';
+                    }
 
                     // setup e-mail data with unicode symbols
                     var mailOptions = {
