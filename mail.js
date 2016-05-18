@@ -7,7 +7,7 @@ var models = require('./models/models.js')(wagner);
 var nodemailer = require('nodemailer');
 
 // create reusable transporter object using the default SMTP transport
-var transporter = nodemailer.createTransport('smtps://kevin.j.tsai%40gmail.com:pass@smtp.gmail.com');
+var transporter = nodemailer.createTransport('smtps://contact%40lazulio.com:Lazulio0@smtp.zoho.com');
 
 var date = new Date();
 date.setDate(date.getDate() - 1);
@@ -83,7 +83,7 @@ models.User.find({}, function (error, docs) {
 
                     // setup e-mail data with unicode symbols
                     var mailOptions = {
-                        from: '"Lazulio" <foo@blurdybloop.com>', // sender address, though can't fool the e-mail address
+                        from: '"Lazulio" <contact@lazulio.com>', // sender address, though can't fool the e-mail address
                         to: 'kevin.j.tsai@gmail.com', // list of receivers
                         subject: 'Daily digest from Lazulio', // Subject line
                         text: 'textHello world 🐴', // plaintext body, i guess this is when html doesn't work
