@@ -38,12 +38,16 @@
         max-width: 100%;
     }
 
-    .cart-button {
-  cursor: pointer;
-  color: white;
-  background-color: #CC4A14;
+.cart-button {
+    cursor: pointer;
+    color: white;
+    background-color: #CC4A14;
 }
 
-.cart-button i {
-  margin-right: 0.33em;
+    .cart-button i {
+        margin-right: 0.33em;
+    }
+
+.login-section {
+    background-image: url("/images/lapis_background.jpg");
 }

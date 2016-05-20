@@ -1,9 +1,7 @@
 <nav class="navbar navbar-default navbar-static-top navbar-inverse">
   <div class="container">
     <ul class="nav navbar-nav">
-      <li class="active">
-        <a ng-href="#/"><span class="glyphicon glyphicon-home"></span> Home</a>
-      </li>
+
       <!--<li>
         <a href="https://devcenter.heroku.com/articles/how-heroku-works"><span class="glyphicon glyphicon-user"></span> How Heroku Works</a>
       </li>
@@ -25,19 +23,24 @@
       </li>-->
       <li>
         <search-bar></search-bar>
-		<button ng-click="freeTextSearch()" >Search</button>
-      </li>
-      <li>
         <div>
           <!--<a ng-href="#/tags" >See all tags (advanced search)</a>-->
-          <a ng-click="openTagsModal()" >See all tags (advanced search)</a>
+          <a ng-click="openTagsModal()" >Browse technology</a>
         </div>
+      </li>
+      <li>
+
+        <button ng-click="freeTextSearch()" >Search</button>
+
       </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li class="navbar-right">
         <a href="#/myaccount"><span class="glyphicon glyphicon-user"></span> My Account</a>
       </li>
+      <a ng-href="#/">
+        <img src="/images/logo_blue.png" height="40px"/>
+      </a>
     </ul>
   </div>
 </nav>

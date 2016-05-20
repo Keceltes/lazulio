@@ -1,11 +1,16 @@
 <div>
-  <h1>Lazulio about/registration page</h1><br/>
+  <div class="login-section">
+    <h1>Lazulio about/registration page</h1>
+    <br/>
 
-  <span ng-show="auth.profile">User name is {{auth.profile.nickname}}</span>
-  <span ng-show="!auth.profile">You are not logged in yet</span><br/>
-  <input type="submit" ng-click="auth.signin()" value="Log in"/><br/>
-  <input type="submit" ng-click="logout()" value="Log out" /><br/>
-
+    <span ng-show="auth.profile">User name is {{auth.profile.nickname}}</span>
+    <span ng-show="!auth.profile">You are not logged in yet</span>
+    <br/>
+    <input type="submit" ng-click="auth.signin()" value="Log in"/>
+    <br/>
+    <input type="submit" ng-click="logout()" value="Log out" />
+    <br/>
+  </div>
   <br/>
   TAKE THE TOUR about us and the product<br/>
   scroll down<br/>
