@@ -12,6 +12,7 @@
     "angular-jwt": "latest",
     "angular-storage": "latest",
     "angular-ui-bootstrap": "latest",
+	"angular-ui-grid": "latest",
     "auth0": "latest",
     "body-parser": "1.12.4",
     "bootstrap": "latest",

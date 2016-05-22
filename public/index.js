@@ -5,6 +5,7 @@ console.log('accessed from index.ejs232');
 
 require('angular-ui-bootstrap');
 require('angular-animate');
+//require('angular-ui-grid');
 var _ = require('underscore');
 var controllers = require('./controllers');
 var directives = require('./directives');
@@ -23,7 +24,7 @@ _.each(services, function (service, name) {
 });
 
 //sometimes the var app is used for express(), this time it's used for an angular module, probably nothing of concern
-var app = angular.module('lazulio', ['lazulio.components', 'auth0', 'angular-storage', 'angular-jwt', 'ui.bootstrap', 'ngAnimate', 'ngRoute']);
+var app = angular.module('lazulio', ['lazulio.components', 'auth0', 'angular-storage', 'angular-jwt', 'ui.bootstrap', 'ngAnimate', 'ngRoute', 'ui.grid']);
 
 //routing via routeProvider?  Not sure why this is here and exists directives, though directives are linked by controller.js
 //this is linked directly by web address, meaning they don't pass the controller REST API

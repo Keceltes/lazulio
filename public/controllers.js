@@ -178,6 +178,18 @@ exports.AssetSaveController = function ($scope, $http, $timeout) {
 
 exports.AssetResultController = function ($scope, $http, $routeParams, $timeout) {
     console.log('asset result controller properly registered');
+    $scope.assets = [];
+    $scope.gridData = {
+        enableSorting: true,
+        /*columnDefs: [
+            { name: 'firstName', field: 'first-name' },
+            { name: '1stFriend', field: 'friends[0]' },
+            { name: 'city', field: 'address.city' },
+            { name: 'getZip', field: 'getZip()', enableCellEdit: false }
+        ],*/
+        data : 'assets'
+    };
+
     var query;
     //need to fill $scope.assets
     if ($routeParams.tags != undefined) {
@@ -190,7 +202,9 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
     $http.
         get('/api/v1/asset/' + query).
         success(function (data) {
+        console.log("data: " + JSON.stringify(data.assets));
         $scope.assets = data.assets;
+
         if ($scope.user == undefined) {
             $scope.following = -1;
         }

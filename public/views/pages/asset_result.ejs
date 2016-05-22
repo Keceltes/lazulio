@@ -10,9 +10,12 @@
   </div>
   current number of followers: ??<br/>
     <br/>
-    <div ng-repeat="asset in assets">
+    <!--<div ng-repeat="asset in assets">
         name: {{asset.name}} <a ng-href="#/asset/{{asset._id}}">open asset</a>
-    </div>
+    </div>-->
+    <div ui-grid="gridData" class="myGrid"></div>
+  <!--<div ui-grid="{ data: assets }" class="myGrid"></div>-->
+
     <br/>
     <br/>
     <br/>
