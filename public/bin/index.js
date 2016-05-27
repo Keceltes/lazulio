@@ -13149,7 +13149,7 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
             //token is expired and not via access_token
                 else if (document.URL.indexOf('access_token') == -1) {
                     console.log('token is expired and not via access_token');
-                    event.preventDefault();
+                    //event.preventDefault();
                     $location.path('/about');
                 }
             //token is expired but just logged in
@@ -13160,7 +13160,7 @@ app.config(function myAppConfig($routeProvider, authProvider, $httpProvider, $lo
             //auth0 uses access_token to know what page to redirect to after login
             else if (document.URL.indexOf('access_token') == -1) {
                 console.log('not authenticated and non existant token: ' + document.URL);
-                event.preventDefault();
+                //event.preventDefault();
                 $location.path('/about');
             }
             else {

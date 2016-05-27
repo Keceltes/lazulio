@@ -1,10 +1,10 @@
 <div>
   <div class="login-section">
-    <h1>Lazulio about/registration page</h1>
+    <h1 style="color:white">Lazulio about/registration page</h1>
     <br/>
 
-    <span ng-show="auth.profile">User name is {{auth.profile.nickname}}</span>
-    <span ng-show="!auth.profile">You are not logged in yet</span>
+    <span ng-show="auth.profile" style="color:white">User name is {{auth.profile.nickname}}</span>
+    <span ng-show="!auth.profile" style="color:white">You are not logged in yet</span>
     <br/>
     <input type="submit" ng-click="auth.signin()" value="Log in"/>
     <br/>
