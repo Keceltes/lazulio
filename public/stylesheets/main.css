@@ -1,3 +1,8 @@
+.unpadded {
+    padding: 0px 0 0 0;
+    text-align: center;
+}
+
 .jumbotron {
     background: #532F8C;
     color: white;
@@ -50,9 +55,32 @@
 
 .login-section {
     background-image: url("/images/lapis_background.jpg");
+    text-align: center;
+}
+
+.centered-div {
+    text-align: center;
 }
 
 .myGrid {
-    width: 1000px;
-    height: 500px;
+}
+
+.footer {
+    text-align: center;
+}
+
+.beautiful-asset-table {
+    border-collapse: separate;
+    border-spacing: 50px 10px;
+}
+
+    .beautiful-asset-table td {
+        border: 1px solid black;
+        width: 400px;
+        padding: 10px 0;
+    }
+
+.padded-table {
+    border-collapse: separate;
+    border-spacing: 50px 0;
 }

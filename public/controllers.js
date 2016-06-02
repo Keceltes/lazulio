@@ -55,6 +55,12 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
         
         $uibModalInstanceSearch = modalInstance;
     };
+    
+    $scope.logout = function () {
+        auth.signout();
+        store.remove('profile');
+        store.remove('token');
+    }
 };
 
 exports.AdvancedSearchController = function ($scope, $http) {
@@ -139,7 +145,6 @@ exports.AdvancedSearchController = function ($scope, $http) {
 exports.AboutController = function ($scope, $http, $timeout, auth, store) {
     // LoginCtrl.js
     //angular.module('lazulio').controller( 'LoginCtrl', function ( $scope, auth) {
-    
     $scope.logout = function () {
         auth.signout();
         store.remove('profile');
@@ -181,12 +186,27 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
     $scope.assets = [];
     $scope.gridData = {
         enableSorting: true,
-        /*columnDefs: [
-            { name: 'firstName', field: 'first-name' },
-            { name: '1stFriend', field: 'friends[0]' },
-            { name: 'city', field: 'address.city' },
-            { name: 'getZip', field: 'getZip()', enableCellEdit: false }
-        ],*/
+        columnDefs: [
+            {
+                name: 'Name',
+                cellTemplate: '<div>' +
+                    '<a href="#/asset/{{row.entity._id}}">{{row.entity.name}}</a>' +
+                    '</div>'
+            },
+            //{ name: 'Name', field: 'name' },
+            { name: 'Organization', field: 'organization' },
+            { name: 'Description', field: 'description' },
+            { name: 'Market', field: 'market' },
+    { name: 'IP Status', field: 'ipStatus' },
+    { name: 'Problem', field: 'problem' },
+    { name: 'Solution', field: 'solution' },
+    { name: 'Application', field: 'application' },
+    { name: 'Advantages', field: 'advantages' },
+    { name: 'Looking For', field: 'lookingFor' },
+    { name: 'Contact', field: 'contact' },
+    { name: 'Tags', field: 'tags' }
+        ],
+        i18n: 'en',
         data : 'assets'
     };
 
@@ -309,7 +329,18 @@ exports.SearchBarController = function ($scope, $http) {
 
 exports.PopularFeedController = function ($scope, $http) {
     $http.get('/api/v1/asset/popular').success(function (data) {
-        $scope.popularAssets = data.assets;
+        //$scope.popularAssets = data.assets;
+
+        $scope.popularAssets = [];
+        var currentColumn = [];
+        for (var i = 0; i < data.assets.length; i++) {
+            if (i % 3 == 0) {
+                $scope.popularAssets.push(currentColumn);
+                currentColumn = [];
+            }
+            currentColumn.push(data.assets[i]);
+        }
+        $scope.popularAssets.push(currentColumn);
     });
 };
 exports.FollowedSearchFeedController = function ($scope, $http) {

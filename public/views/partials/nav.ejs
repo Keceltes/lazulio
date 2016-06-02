@@ -21,6 +21,11 @@
             <li><a href="https://devcenter.heroku.com/articles/getting-started-with-jruby">Getting Started with Ruby on Heroku (Microsoft Windows)</a></li>
           </ul>
       </li>-->
+      <li class="unpadded">
+        <a ng-href="#/">
+          <img src="/images/logo_blue.png" height="40px"/>
+        </a>
+      </li>
       <li>
         <search-bar></search-bar>
         <div>
@@ -29,18 +34,30 @@
         </div>
       </li>
       <li>
-
         <button ng-click="freeTextSearch()" >Search</button>
-
       </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
-      <li class="navbar-right">
+      <!--<li class="navbar-right">
         <a href="#/myaccount"><span class="glyphicon glyphicon-user"></span> My Account</a>
+      </li>-->
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">
+          <span class="glyphicon glyphicon-user"></span> My Account <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" role="menu">
+          <li>
+            <a href="#/myaccount">Subscriptions</a>
+          </li>
+          <li>
+            <a href="https://devcenter.heroku.com/articles/getting-started-with-ruby">Preferences</a>
+          </li>
+          <li class="divider"></li>
+          <li>
+            <a ng-click="logout()">Log out</a>
+          </li>
+        </ul>
       </li>
-      <a ng-href="#/">
-        <img src="/images/logo_blue.png" height="40px"/>
-      </a>
     </ul>
   </div>
 </nav>

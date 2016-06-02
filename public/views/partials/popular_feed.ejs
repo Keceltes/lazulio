@@ -1,7 +1,13 @@
 ﻿<div>
-  <div ng-repeat="asset in popularAssets">
-    name: {{asset.name}} <a ng-href="#/asset/{{asset._id}}">open asset</a>
-  </div>
+  <table class="beautiful-asset-table" align="center" >
+    <tr ng-repeat="row in popularAssets">
+      <td ng-repeat="asset in row">
+        <h3>{{asset.name}}</h3>
+        {{asset.organization}}<br/>
+        <a ng-href="#/asset/{{asset._id}}">open asset</a>
+      </td>
+    </tr>
+  </table>
   <a ng-href="#/">
     .....more
   </a>

@@ -221,7 +221,7 @@ module.exports = function (wagner) {
             Asset.
         find().
         sort({ viewCount: -1 }).
-        limit(5).
+        limit(6).
         exec(handleMany.bind(null, 'assets', res));
         };
     }));
@@ -230,7 +230,7 @@ module.exports = function (wagner) {
             Asset.
                 find({ tags: { $in: req.body.interestedTags } }).
                 sort({ _id: -1 }). 
-                limit(5).
+                limit(6).
                 exec(handleMany.bind(null, 'assets', res));
                 };
     }));
@@ -244,7 +244,7 @@ module.exports = function (wagner) {
             Asset.
                 find({ _id: { $in: assetIds } }).
                 sort({ updatedAt: -1 }).//interesting!  ID is the timestamp ...
-                limit(5).
+                limit(6).
                 exec(handleMany.bind(null, 'assets', res));
                 };
     }));
