@@ -6,7 +6,7 @@ exports.HomePageController = function ($http, $scope, auth) {
 
 }
 
-exports.NavBarController = function ($http, $scope, $uibModal, auth, $timeout) {
+exports.NavBarController = function ($http, $scope, $uibModal, auth, store, $timeout) {
     //NavBarController only gets called once when app loaded for first time
     $scope.savedSearchCategories = [];
     //if a function like this exists, it would be great in the NavBar

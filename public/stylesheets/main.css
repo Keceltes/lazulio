@@ -1,6 +1,5 @@
-.unpadded {
-    padding: 0px 0 0 0;
-    text-align: center;
+.unpadded img {
+    display: block;
 }
 
 .jumbotron {
