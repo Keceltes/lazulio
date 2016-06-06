@@ -34,16 +34,13 @@
           <!--<a ng-href="#/tags" >See all tags (advanced search)</a>-->
           <a ng-click="openTagsModal()" >Browse technology</a>
         </div>
-        <pageslide ps-open="checked" ps-side="left"  ps-key-listener="true"  ps-body-class="true" ps-click-outside="false">
-          <div style="padding:20px;background:#fcfcfc">
+        <pageslide ps-open="checked" ps-side="left"  ps-key-listener="true">
+          <div style="padding:20px">
             <h2>Hello Pageslide</h2>
             <p>Put here whatever you want</p>
             <a ng-click="toggle()" class="button" >Close</a>
           </div>
         </pageslide>
-        <div uib-collapse="!checked">
-          <div class="well well-lg">Some content</div>
-        </div>
       </li>
       <li>
         <button ng-click="freeTextSearch()" >Search</button>

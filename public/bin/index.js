@@ -12601,8 +12601,8 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth, store, $tim
     }
     $scope.openTagsModal = function () {
         console.log('open tags modal here');
-        //$scope.checked = !$scope.checked
-        var modalInstance = $uibModal.open({
+        $scope.checked = !$scope.checked
+        /*var modalInstance = $uibModal.open({
             animation: true,
             template: '<advanced-search></advanced-search>',
             //size: size,
@@ -12630,7 +12630,7 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth, store, $tim
             console.log('Modal dismissed at: ' + new Date());
         });
         
-        $uibModalInstanceSearch = modalInstance;
+        $uibModalInstanceSearch = modalInstance;*/
     };
     
     $scope.logout = function () {
