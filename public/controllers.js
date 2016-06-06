@@ -24,8 +24,13 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth, store, $tim
     $scope.freeTextSearch = function () {
         $scope.changeRoute('#/asset/results/byText/' + $scope.searchText);
     };
+    $scope.checked = false; // This will be binded using the ps-open attribute
+    $scope.toggle = function () {
+        $scope.checked = !$scope.checked
+    }
     $scope.openTagsModal = function () {
         console.log('open tags modal here');
+        //$scope.checked = !$scope.checked
         var modalInstance = $uibModal.open({
             animation: true,
             template: '<advanced-search></advanced-search>',
@@ -34,7 +39,8 @@ exports.NavBarController = function ($http, $scope, $uibModal, auth, store, $tim
                 items: function () {
                     return [];//$scope.items;
                 }
-            }
+            },
+            size: 'lg',
         });
         
         modalInstance.result.then(function (selectedItem) {
