@@ -34,11 +34,10 @@
           <!--<a ng-href="#/tags" >See all tags (advanced search)</a>-->
           <a ng-click="openTagsModal()" >Browse technology</a>
         </div>
-        <pageslide ps-open="checked" ps-side="left"  ps-key-listener="true">
-          <div style="padding:20px">
-            <h2>Hello Pageslide</h2>
-            <p>Put here whatever you want</p>
-            <a ng-click="toggle()" class="button" >Close</a>
+        <!--I want to add ps-body-class="true" or "checked" to make background grey but it blocks all links/buttons-->
+        <pageslide ps-open="checked" ps-side="top"  ps-key-listener="true" ps-size="600px" >
+          <div style="padding:30px">
+            <advanced-search></advanced-search>
           </div>
         </pageslide>
       </li>

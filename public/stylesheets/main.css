@@ -83,6 +83,9 @@
     border-collapse: separate;
     border-spacing: 50px 0;
 }
+.advanced-search-table {
+    	width: 100%;
+}
 .ng-pageslide {
                 background: #eee;
             }

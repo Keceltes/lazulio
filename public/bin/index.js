@@ -12646,17 +12646,26 @@ exports.AdvancedSearchController = function ($scope, $http) {
     console.log('scope.categoryAll function called');
     $http.get('/api/v1/category/all').success(function (data) {
         console.log('api/v1/category/all called successfully');
-        //$scope.categories = data.categories;
+        //$scope.categories = data.categories; need to do some adjustment to matrix for html table
         $scope.categories = [];
-        var currentColumn = [];
+        var currentRow = [];
         for (var i = 0; i < data.categories.length; i++) {
-            if (data.categories[i].parent == '' && i != 0) {
-                $scope.categories.push(currentColumn);
-                currentColumn = [];
+            if ((data.categories[i].parent == '') || currentRow.length % 5 == 0) {
+                $scope.categories.push(currentRow);
+                currentRow = [];
             }
-            currentColumn.push(data.categories[i]);
+            //fake row for category separator
+            if ((data.categories[i].parent == '')) {
+                $scope.categories.push([{ parent: '', _id: 'Category' }]);
+            }
+            //fake cell for indent
+            if (currentRow.length % 5 == 0 && data.categories[i].parent != '') {
+                var fakeData = { parent: '', _id: '' };
+                currentRow.push(fakeData);
+            }
+            currentRow.push(data.categories[i]);
         }
-        $scope.categories.push(currentColumn);
+        $scope.categories.push(currentRow);
     });
     var updateResults = function () {
         var tagString = '0';
@@ -12696,17 +12705,30 @@ exports.AdvancedSearchController = function ($scope, $http) {
         }
     };
     $scope.removeSearchBy = function (category) {
-        var index = $scope.chosenCategories.indexOf(category);
-        if (index != -1) {
-            $scope.chosenCategories.splice(index, 1);
-            updateResults();
-        }
+        setTimeout(function () {
+            var index = $scope.chosenCategories.indexOf(category);
+            if (index != -1) {
+                $scope.chosenCategories.splice(index, 1);
+                updateResults();
+            }
+        }, 10);
+
     };
     $scope.ok = function () {
-        $uibModalInstanceSearch.close($scope.chosenCategories);
+        //$uibModalInstanceSearch.close($scope.chosenCategories);
+        $scope.checked = !$scope.checked;
+        var tagString = '0';
+        if ($scope.chosenCategories.length > 0) {
+            tagString = $scope.chosenCategories.map(function (elem) {
+                return elem._id;
+            }).join("+");
+        }
+        $scope.savedSearchCategories = $scope.chosenCategories.slice();
+        $scope.changeRoute('#/asset/results/byTag/and/' + tagString);
     };
     $scope.cancel = function () {
-        $uibModalInstanceSearch.dismiss('cancel');
+        //$uibModalInstanceSearch.dismiss('cancel');
+        $scope.checked = !$scope.checked;
     };
     $scope.delete = function (category) {
         $scope.success = false;
@@ -12761,14 +12783,16 @@ exports.AssetSaveController = function ($scope, $http, $timeout) {
 exports.AssetResultController = function ($scope, $http, $routeParams, $timeout) {
     console.log('asset result controller properly registered');
     $scope.assets = [];
+    $scope.assetOpened = false;
     $scope.gridData = {
         enableSorting: true,
         columnDefs: [
             {
                 name: 'Name',
-                cellTemplate: '<div>' +
+                /*cellTemplate: '<div>' +
                     '<a href="#/asset/{{row.entity._id}}">{{row.entity.name}}</a>' +
-                    '</div>'
+                    '</div>'*/
+                cellTemplate: '<button class="btn primary" ng-click="grid.appScope.openAsset(row.entity._id)">{{row.entity.name}}</button>' 
             },
             //{ name: 'Name', field: 'name' },
             { name: 'Organization', field: 'organization' },
@@ -12803,17 +12827,23 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
         $scope.assets = data.assets;
 
         if ($scope.user == undefined) {
-            $scope.following = -1;
+            $scope.followingResult = -1;
         }
         else {
-            $scope.following = $scope.user.interestedSearches.indexOf(query);
+            $scope.followingResult = $scope.user.interestedSearches.indexOf(query);
         }
         console.log('search found? ' + $scope.user.interestedSearches.indexOf(query));
     });
+    $scope.openAsset = function (asset_id) {
+        console.log('openAsset called ' + asset_id);
+        $scope.assetOpened = !$scope.assetOpened;
+        $routeParams.id = asset_id;
+        exports.AssetController($scope, $http, $routeParams);
+    }
     $scope.addToCart = function () {
-        if ($scope.following > -1) {
+        if ($scope.followingResult > -1) {
             console.log('already in cart, should remove');
-            $scope.user.interestedSearches.splice($scope.following, 1);
+            $scope.user.interestedSearches.splice($scope.followingResult, 1);
             //search all searches to see if need to remove
             $scope.user.interestedTags = RefreshInterestedTags($scope.user.interestedSearches);
         }
@@ -12827,7 +12857,7 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
           put('/api/v1/save/cart', $scope.user).
           success(function (data) {
             console.log('add to cart successful?');
-            $scope.following = $scope.user.interestedSearches.indexOf(query);
+            $scope.followingResult = $scope.user.interestedSearches.indexOf(query);
         });
     };
 };
@@ -12847,7 +12877,7 @@ function RefreshInterestedTags(interestedSearches) {
     return interestedTags;
 }
 
-exports.AssetController = function ($scope, $http, $routeParams, $timeout) {
+exports.AssetController = function ($scope, $http, $routeParams) {
     console.log($routeParams.id);
     var encoded = encodeURIComponent($routeParams.id);
     console.log('asset  controller properly registered');
@@ -12909,15 +12939,15 @@ exports.PopularFeedController = function ($scope, $http) {
         //$scope.popularAssets = data.assets;
 
         $scope.popularAssets = [];
-        var currentColumn = [];
+        var currentRow = [];
         for (var i = 0; i < data.assets.length; i++) {
             if (i % 3 == 0) {
-                $scope.popularAssets.push(currentColumn);
-                currentColumn = [];
+                $scope.popularAssets.push(currentRow);
+                currentRow = [];
             }
-            currentColumn.push(data.assets[i]);
+            currentRow.push(data.assets[i]);
         }
-        $scope.popularAssets.push(currentColumn);
+        $scope.popularAssets.push(currentRow);
     });
 };
 exports.FollowedSearchFeedController = function ($scope, $http) {

@@ -1,10 +1,17 @@
 <div>
-    <h1>asset results</h1>
+  <!--I want to add ps-body-class="true" or "checked" to make background grey but it blocks all links/buttons-->
+  <pageslide ps-open="assetOpened" ps-side="right"  ps-key-listener="true" ps-size="1500px" >
+    <div style="padding:30px">
+      <asset></asset>
+    </div>
+  </pageslide>
+
+  <h1>asset results</h1>
   <div class="cart-button" ng-click="addToCart();">
-    <div ng-show="(following == -1)">
+    <div ng-show="(followingResult == -1)">
       Subscribe to this search
     </div>
-    <div ng-show="(following > -1)">
+    <div ng-show="(followingResult > -1)">
       Already subscribed
     </div>
   </div>
