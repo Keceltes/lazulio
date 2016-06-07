@@ -269,7 +269,7 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
         $routeParams.id = asset_id;
         exports.AssetController($scope, $http, $routeParams);
     }
-    $scope.addToCart = function () {
+    $scope.addToCartResults = function () {
         if ($scope.followingResult > -1) {
             console.log('already in cart, should remove');
             $scope.user.interestedSearches.splice($scope.followingResult, 1);
@@ -307,19 +307,21 @@ function RefreshInterestedTags(interestedSearches) {
 }
 
 exports.AssetController = function ($scope, $http, $routeParams) {
-    console.log($routeParams.id);
-    var encoded = encodeURIComponent($routeParams.id);
-    console.log('asset  controller properly registered');
-    $http.get('/api/v1/asset/id/' + encoded).success(function (data) {
-        console.log('returned: ' + data);
-        $scope.asset = data.asset;
-        if ($scope.user == undefined) {
-            $scope.following = -1;
-        }
-        else {
-            $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
-        }
-    });
+    console.log('routeparams: ' + $routeParams.id);
+    if ($routeParams.id != undefined) {
+        var encoded = encodeURIComponent($routeParams.id);
+        console.log('asset  controller properly registered');
+        $http.get('/api/v1/asset/id/' + encoded).success(function (data) {
+            console.log('returned: ' + data);
+            $scope.asset = data.asset;
+            if ($scope.user == undefined) {
+                $scope.following = -1;
+            }
+            else {
+                $scope.following = matchedIdFound({ asset: $scope.asset._id }, $scope.user.interestedAssets);
+            }
+        });
+    }
     $scope.addToCart = function (asset) {
         if ($scope.following > -1) {
             console.log('already in cart, should remove');
@@ -380,6 +382,7 @@ exports.PopularFeedController = function ($scope, $http) {
     });
 };
 exports.FollowedSearchFeedController = function ($scope, $http) {
+    console.log('$scope.user loaded? ' + $scope.user);
     $http.put('/api/v1/asset/followed', $scope.user).success(function (data) {
         $scope.feedAssets = data.assets;
     });
