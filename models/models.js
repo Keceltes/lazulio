@@ -16,7 +16,9 @@ module.exports = function(wagner) {
   var User =
     mongoose.model('User', require('./user'), 'users');
   var Asset =
-      mongoose.model('Asset', require('./asset'), 'assets');
+ mongoose.model('Asset', require('./asset'), 'assets');
+    var Search =
+ mongoose.model('Search', require('./search'), 'searches');
 
 
   //a JSON structure of the models
@@ -24,7 +26,8 @@ module.exports = function(wagner) {
   var models = {
     Category: Category,
     User: User,
-    Asset: Asset
+        Asset: Asset,
+    Search: Search
   };
 
   // To ensure DRY-ness, register factories in a loop

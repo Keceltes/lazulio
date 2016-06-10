@@ -12749,6 +12749,20 @@ exports.AboutController = function ($scope, $http, $timeout, auth, store) {
         store.remove('profile');
         store.remove('token');
     }
+    $http.get('/api/v1/asset/byTag/and/0').success(function (data) {
+        $scope.allAssets = data.assets;
+        $scope.allInstitutes = [];
+        $scope.allTags = [];
+        for (var i = 0; i < data.assets.length; i++) {
+            if ($scope.allInstitutes.indexOf(data.assets[i].organization) == -1)
+                $scope.allInstitutes.push(data.assets[i].organization);
+            for (var j = 0; j < data.assets[i].tags.length; j++)
+            {
+                if ($scope.allTags.indexOf(data.assets[i].tags[j]) == -1)
+                        $scope.allTags.push(data.assets[i].tags[j]);
+            }
+        }
+    });
 };
 
 
@@ -12955,7 +12969,17 @@ exports.PopularFeedController = function ($scope, $http) {
 exports.FollowedSearchFeedController = function ($scope, $http) {
     console.log('$scope.user loaded? ' + $scope.user);
     $http.put('/api/v1/asset/followed', $scope.user).success(function (data) {
-        $scope.feedAssets = data.assets;
+        //$scope.feedAssets = data.assets;
+        $scope.feedAssets = [];
+        var currentRow = [];
+        for (var i = 0; i < data.assets.length; i++) {
+            if (i % 3 == 0) {
+                $scope.feedAssets.push(currentRow);
+                currentRow = [];
+            }
+            currentRow.push(data.assets[i]);
+        }
+        $scope.feedAssets.push(currentRow);
     });
 };
 exports.FollowedAssetFeedController = function ($scope, $http) {

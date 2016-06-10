@@ -176,46 +176,7 @@ module.exports = function (wagner) {
             });
         };
     }));
-    api.get('/asset/byTag/and/:ids', wagner.invoke(function (Asset) {
-        return function (req, res) {
-            if (req.params.ids[0] != '0') {
-                console.log(req.params.ids);
-                var searchTags = req.params.ids.split('+');
-                //var sort = { _id: 1 };
-                Asset.
-        find({ tags: { $all: searchTags } }).//all values in array searchTags must match
-        //find({ tags: {$in: searchTags} }). //at least 1 value in array searchTags must match
-        //sort(sort).
-        exec(handleMany.bind(null, 'assets', res));
-            }
-            else {
-                console.log('none');
-                Asset.
-        find().
-        exec(handleMany.bind(null, 'assets', res));
-            }
-        };
-    }));
-    api.get('/asset/byTag/or/:ids', wagner.invoke(function (Asset) {
-        return function (req, res) {
-            if (req.params.ids[0] != '0') {
-                console.log(req.params.ids);
-                var searchTags = req.params.ids.split('+');
-                //var sort = { _id: 1 };
-                Asset.
-        //find({ tags: { $all: searchTags } }).//all values in array searchTags must match
-        find({ tags: {$in: searchTags} }). //at least 1 value in array searchTags must match
-        //sort(sort).
-        exec(handleMany.bind(null, 'assets', res));
-            }
-            else {
-                console.log('none');
-                Asset.
-        find().
-        exec(handleMany.bind(null, 'assets', res));
-            }
-        };
-    }));
+
     api.get('/asset/popular', wagner.invoke(function (Asset) {
         return function (req, res) {
             Asset.
@@ -256,6 +217,46 @@ module.exports = function (wagner) {
           , { score: { $meta: "textScore" } })
           .sort({ score: { $meta: "textScore" } }).
       exec(handleMany.bind(null, 'assets', res));
+        };
+    }));
+    api.get('/asset/byTag/or/:ids', wagner.invoke(function (Asset) {
+        return function (req, res) {
+            if (req.params.ids[0] != '0') {
+                console.log(req.params.ids);
+                var searchTags = req.params.ids.split('+');
+                //var sort = { _id: 1 };
+                Asset.
+        //find({ tags: { $all: searchTags } }).//all values in array searchTags must match
+        find({ tags: { $in: searchTags } }).//at least 1 value in array searchTags must match
+        //sort(sort).
+        exec(handleMany.bind(null, 'assets', res));
+            }
+            else {
+                console.log('none');
+                Asset.
+        find().
+        exec(handleMany.bind(null, 'assets', res));
+            }
+        };
+    }));
+    api.get('/asset/byTag/and/:ids', wagner.invoke(function (Asset) {
+        return function (req, res) {
+            if (req.params.ids[0] != '0') {
+                console.log(req.params.ids);
+                var searchTags = req.params.ids.split('+');
+                //var sort = { _id: 1 };
+                Asset.
+        find({ tags: { $all: searchTags } }).//all values in array searchTags must match
+        //find({ tags: {$in: searchTags} }). //at least 1 value in array searchTags must match
+        //sort(sort).
+        exec(handleMany.bind(null, 'assets', res));
+            }
+            else {
+                console.log('none');
+                Asset.
+        find().
+        exec(handleMany.bind(null, 'assets', res));
+            }
         };
     }));
     api.get('/asset/id/:id', wagner.invoke(function (Asset) {
