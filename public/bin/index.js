@@ -12574,10 +12574,40 @@ module.exports = {
  * If the user does not exist, you would create a new record.
  * Ifit does exist, you would update all fields, essentially keeping a local copy of the user data.*/
 exports.HomePageController = function ($http, $scope, auth) {
-
 }
 
 exports.NavBarController = function ($http, $scope, $uibModal, auth, store, $timeout) {
+    //initially query of all data?
+    $http.get('/api/v1/asset/byTag/and/0').success(function (data) {
+        $scope.allAssets = data.assets;
+        $scope.allInstitutes = [];
+        $scope.allTags = [];
+        for (var i = 0; i < data.assets.length; i++) {
+            if ($scope.allInstitutes.indexOf(data.assets[i].organization) == -1)
+                $scope.allInstitutes.push(data.assets[i].organization);
+            console.log("data.assets: " + JSON.stringify(data.assets[i]));
+            if (data.assets[i].tags != undefined) {
+                for (var j = 0; j < data.assets[i].tags.length; j++) {
+                    var index = -1;
+                    for (var k = 0; k < $scope.allTags.length; k++) {
+                        if ($scope.allTags[k].name == data.assets[i].tags[j])
+                            index = k;
+                    }
+                    if (index == -1) {
+                        $scope.allTags.push(
+                            {
+                                name: data.assets[i].tags[j], count: 1
+                            });
+                    }
+                    else {
+                        console.log('ever get here?');
+                        $scope.allTags[index].count++;
+                    }
+                }
+            }
+        }
+        console.log("alltags: " + JSON.stringify($scope.allTags));
+    });
     //NavBarController only gets called once when app loaded for first time
     $scope.savedSearchCategories = [];
     //if a function like this exists, it would be great in the NavBar
@@ -12650,6 +12680,14 @@ exports.AdvancedSearchController = function ($scope, $http) {
         $scope.categories = [];
         var currentRow = [];
         for (var i = 0; i < data.categories.length; i++) {
+            //add asset counts
+            data.categories[i].assetCount = 0;
+            for (var j = 0; j < $scope.allTags.length; j++) {
+                if ($scope.allTags[j].name == data.categories[i]._id) {
+                    data.categories[i].assetCount = $scope.allTags[j].count;
+                }
+            }
+            //then work on placement in grid
             if ((data.categories[i].parent == '') || currentRow.length % 5 == 0) {
                 $scope.categories.push(currentRow);
                 currentRow = [];
@@ -12749,20 +12787,6 @@ exports.AboutController = function ($scope, $http, $timeout, auth, store) {
         store.remove('profile');
         store.remove('token');
     }
-    $http.get('/api/v1/asset/byTag/and/0').success(function (data) {
-        $scope.allAssets = data.assets;
-        $scope.allInstitutes = [];
-        $scope.allTags = [];
-        for (var i = 0; i < data.assets.length; i++) {
-            if ($scope.allInstitutes.indexOf(data.assets[i].organization) == -1)
-                $scope.allInstitutes.push(data.assets[i].organization);
-            for (var j = 0; j < data.assets[i].tags.length; j++)
-            {
-                if ($scope.allTags.indexOf(data.assets[i].tags[j]) == -1)
-                        $scope.allTags.push(data.assets[i].tags[j]);
-            }
-        }
-    });
 };
 
 

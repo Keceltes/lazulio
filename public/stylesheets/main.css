@@ -55,6 +55,7 @@
 .login-section {
     background-image: url("/images/lapis_background.jpg");
     text-align: center;
+    padding: 50px;
 }
 
 .centered-div {

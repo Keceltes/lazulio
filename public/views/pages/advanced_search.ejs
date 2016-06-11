@@ -11,7 +11,7 @@
               <button class="btn btn-primary" type="button" ng-click="addToSearchBy(category)">✔</button>
               <!--<button class="btn btn-warning" type="button" ng-click="delete(category)">Delete</button>-->
             </span>
-            <span ng-show="category.parent != ''">{{category._id}}</span>
+            <span ng-show="category.parent != ''">{{category._id}} ({{category.assetCount}})</span>
 
             <!-- this is likely not showing up because success is not in the categories scope-->
             <div ng-show="success">
