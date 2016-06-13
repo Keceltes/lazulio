@@ -2,10 +2,7 @@
 var mongoose = require('mongoose');
 
 module.exports = new mongoose.Schema({
-    search: {
-        type: String,
-        required: true
-    },
+    name: { type: String, required: true },
     viewCount: { type: Number, default: 0 }
 });
 

@@ -209,6 +209,19 @@ module.exports = function (wagner) {
                 exec(handleMany.bind(null, 'assets', res));
                 };
     }));
+    api.get('/search/:text', wagner.invoke(function (Search) {
+        return function (req, res) {
+            console.log('searching by id, increasing view count: ' + req.params.text);
+            Search.findOneAndUpdate({ name: req.params.text }, 
+                { $inc: { viewCount: 1 } },
+            { new: true, upsert: true },
+            function (err, search) {
+                console.log('obj: ' + JSON.stringify(search));
+                console.log('any errors?: ' + JSON.stringify(err));
+                return res.json({ search: search });
+            });
+        };
+    }));
     api.get('/asset/byText/:text', wagner.invoke(function (Asset) {
         return function (req, res) {
             //var sort = { _id: 1 };

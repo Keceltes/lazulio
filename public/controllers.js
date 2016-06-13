@@ -288,6 +288,19 @@ exports.AssetResultController = function ($scope, $http, $routeParams, $timeout)
         query = 'byText/' + $routeParams.text;
     }
     $http.
+        get('/api/v1/search/' + query.split("/").join("_")).then(function (data) {
+        //if success
+        console.log('search return success: ' + JSON.stringify(data.data));
+        $scope.searchCount = data.data.search;
+    }, function (data) {
+        //if failure
+        console.log('search return issue: ' + data.data);
+    });
+        /*success(function (data) {
+            //$scope.search = data.search;
+        console.log("any search result: " + JSON.stringify(data.search));
+    });*/
+    $http.
         get('/api/v1/asset/' + query).
         success(function (data) {
         console.log("data: " + JSON.stringify(data.assets));
